@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-
+        <!-- Encabezado -->
         <Grid Grid.Row="0" Padding="16,12,16,12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -24,28 +24,216 @@
 
             <!-- Logo -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Image Source="/Assets/store_logo.png" Height="80" Margin="0,0,10,0"/>
-                <!-- TODO: Agregar imagen que servirá como logo -->
+                <Image Source="Assets/logo.jpg" Height="80" Margin="0,0,10,0"/>
             </StackPanel>
 
-            <!-- Barra de navegación -->
+            <!-- Barra de navegación superior -->
             <NavigationView x:Name="TopNavView"
                             Grid.Column="1"
                             PaneDisplayMode="Top"
                             IsBackButtonVisible="Collapsed"
                             IsSettingsVisible="False"
+                            SelectionChanged="TopNavView_SelectionChanged"
                             HorizontalAlignment="Center"
                             Width="Auto">
+
                 <NavigationView.MenuItems>
                     <NavigationViewItem Content="Productos" Tag="Productos" Icon="Shop"/>
                     <NavigationViewItem Content="Clientes" Tag="Clientes" Icon="Contact"/>
                     <NavigationViewItem Content="Proveedores" Tag="Proveedores" Icon="People"/>
                 </NavigationView.MenuItems>
+
                 <NavigationView.Resources>
-                    <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />
-                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent"/>
                 </NavigationView.Resources>
             </NavigationView>
+        </Grid>
+
+        <!-- Contenedor general de vistas -->
+        <Grid Grid.Row="1" Padding="20">
+
+            <!-- Vista de productos -->
+            <Grid x:Name="VistaProductos" Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Encabezados de productos -->
+                <Grid Grid.Row="0" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Nombre" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="1" Text="Descripción" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="2" Text="Cantidad" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="3" Text="Precio" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="4" Text="Código" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="5" Text="Disponible" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="6" Text="Descuento" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="7" Text="CantDescuento" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="8" Text="Material" FontWeight="Bold"/>
+                </Grid>
+
+                <!-- Lista visual de productos -->
+                <ListView Grid.Row="1"
+                          x:Name="ProductosListView"
+                          SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Producto">
+                            <Border BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{x:Bind Nombre}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Descripcion}"/>
+                                    <TextBlock Grid.Column="2" Text="{x:Bind Cantidad}"/>
+                                    <TextBlock Grid.Column="3" Text="{x:Bind Precio}"/>
+                                    <TextBlock Grid.Column="4" Text="{x:Bind Codigo}"/>
+                                    <CheckBox Grid.Column="5"
+                                              IsChecked="{x:Bind Disponible, Mode=OneWay}"
+                                              IsEnabled="False"/>
+                                    <TextBlock Grid.Column="6" Text="{x:Bind Descuento}"/>
+                                    <TextBlock Grid.Column="7" Text="{x:Bind CantDescuento}"/>
+                                    <TextBlock Grid.Column="8" Text="{x:Bind Material}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <!-- Vista de clientes -->
+            <Grid x:Name="VistaClientes" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Encabezados de clientes -->
+                <Grid Grid.Row="0" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="180"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Nombre" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="1" Text="Apellidos" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="2" Text="Identificación" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="3" Text="Tel" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="4" Text="Dirección casa" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="5" Text="Correo" FontWeight="Bold"/>
+                </Grid>
+
+                <!-- Lista visual de clientes -->
+                <ListView Grid.Row="1"
+                          x:Name="ClientesListView"
+                          SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Cliente">
+                            <Border BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="180"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{x:Bind Nombre}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Apellidos}"/>
+                                    <TextBlock Grid.Column="2" Text="{x:Bind Identificacion}"/>
+                                    <TextBlock Grid.Column="3" Text="{x:Bind Tel}"/>
+                                    <TextBlock Grid.Column="4" Text="{x:Bind DireccionCasa}"/>
+                                    <TextBlock Grid.Column="5" Text="{x:Bind Correo}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <!-- Vista de proveedores -->
+            <Grid x:Name="VistaProveedores" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Encabezados de proveedores -->
+                <Grid Grid.Row="0" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="180"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Nombre" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="1" Text="Apellidos" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="2" Text="Identificación" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="3" Text="Tel" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="4" Text="Dirección casa" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="5" Text="Correo" FontWeight="Bold"/>
+                </Grid>
+
+                <!-- Lista visual de proveedores -->
+                <ListView Grid.Row="1"
+                          x:Name="ProveedoresListView"
+                          SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Proveedor">
+                            <Border BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="180"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{x:Bind Nombre}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Apellidos}"/>
+                                    <TextBlock Grid.Column="2" Text="{x:Bind Identificacion}"/>
+                                    <TextBlock Grid.Column="3" Text="{x:Bind Tel}"/>
+                                    <TextBlock Grid.Column="4" Text="{x:Bind DireccionCasa}"/>
+                                    <TextBlock Grid.Column="5" Text="{x:Bind Correo}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
