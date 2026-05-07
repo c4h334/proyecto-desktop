@@ -27,7 +27,7 @@
                 <Image Source="Assets/logo.jpg" Height="80" Margin="0,0,10,0"/>
             </StackPanel>
 
-            <!-- Barra de navegación superior -->
+            <!-- Navbar -->
             <NavigationView x:Name="TopNavView"
                             Grid.Column="1"
                             PaneDisplayMode="Top"
@@ -36,32 +36,55 @@
                             SelectionChanged="TopNavView_SelectionChanged"
                             HorizontalAlignment="Center"
                             Width="Auto">
-
                 <NavigationView.MenuItems>
                     <NavigationViewItem Content="Productos" Tag="Productos" Icon="Shop"/>
                     <NavigationViewItem Content="Clientes" Tag="Clientes" Icon="Contact"/>
                     <NavigationViewItem Content="Proveedores" Tag="Proveedores" Icon="People"/>
                 </NavigationView.MenuItems>
-
                 <NavigationView.Resources>
-                    <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
-                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent"/>
+                    <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />
                 </NavigationView.Resources>
             </NavigationView>
         </Grid>
 
-        <!-- Contenedor general de vistas -->
+        <!-- Contenido -->
         <Grid Grid.Row="1" Padding="20">
 
             <!-- Vista de productos -->
             <Grid x:Name="VistaProductos" Visibility="Visible">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Encabezados de productos -->
-                <Grid Grid.Row="0" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
+                <!-- Botones -->
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,14">
+                    <Button Click="AgregarProducto_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Add"/>
+                            <TextBlock Text="Agregar"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="ModificarProducto_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Edit"/>
+                            <TextBlock Text="Modificar"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="EliminarProducto_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Delete"/>
+                            <TextBlock Text="Eliminar"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Definición de columnas -->
+                <Grid Grid.Row="1" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="160"/>
@@ -85,8 +108,8 @@
                     <TextBlock Grid.Column="8" Text="Material" FontWeight="Bold"/>
                 </Grid>
 
-                <!-- Lista visual de productos -->
-                <ListView Grid.Row="1"
+                <!-- Lista tabular -->
+                <ListView Grid.Row="2"
                           x:Name="ProductosListView"
                           SelectionMode="Single">
                     <ListView.ItemTemplate>
@@ -110,9 +133,7 @@
                                     <TextBlock Grid.Column="2" Text="{x:Bind Cantidad}"/>
                                     <TextBlock Grid.Column="3" Text="{x:Bind Precio}"/>
                                     <TextBlock Grid.Column="4" Text="{x:Bind Codigo}"/>
-                                    <CheckBox Grid.Column="5"
-                                              IsChecked="{x:Bind Disponible, Mode=OneWay}"
-                                              IsEnabled="False"/>
+                                    <CheckBox Grid.Column="5" IsChecked="{x:Bind Disponible, Mode=OneWay}" IsEnabled="False"/>
                                     <TextBlock Grid.Column="6" Text="{x:Bind Descuento}"/>
                                     <TextBlock Grid.Column="7" Text="{x:Bind CantDescuento}"/>
                                     <TextBlock Grid.Column="8" Text="{x:Bind Material}"/>
@@ -127,11 +148,36 @@
             <Grid x:Name="VistaClientes" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Encabezados de clientes -->
-                <Grid Grid.Row="0" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
+                <!-- Botones -->
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,14">
+                    <Button Click="AgregarCliente_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Add"/>
+                            <TextBlock Text="Agregar"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="ModificarCliente_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Edit"/>
+                            <TextBlock Text="Modificar"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="EliminarCliente_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Delete"/>
+                            <TextBlock Text="Eliminar"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Definición de columnas -->
+                <Grid Grid.Row="1" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="140"/>
@@ -149,8 +195,8 @@
                     <TextBlock Grid.Column="5" Text="Correo" FontWeight="Bold"/>
                 </Grid>
 
-                <!-- Lista visual de clientes -->
-                <ListView Grid.Row="1"
+                <!-- Lista tabular -->
+                <ListView Grid.Row="2"
                           x:Name="ClientesListView"
                           SelectionMode="Single">
                     <ListView.ItemTemplate>
@@ -183,11 +229,36 @@
             <Grid x:Name="VistaProveedores" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Encabezados de proveedores -->
-                <Grid Grid.Row="0" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
+                <!-- Botones -->
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,14">
+                    <Button Click="AgregarProveedor_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Add"/>
+                            <TextBlock Text="Agregar"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="ModificarProveedor_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Edit"/>
+                            <TextBlock Text="Modificar"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="EliminarProveedor_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Delete"/>
+                            <TextBlock Text="Eliminar"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                
+                <!-- Definición de columnas -->
+                <Grid Grid.Row="1" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="140"/>
@@ -205,8 +276,8 @@
                     <TextBlock Grid.Column="5" Text="Correo" FontWeight="Bold"/>
                 </Grid>
 
-                <!-- Lista visual de proveedores -->
-                <ListView Grid.Row="1"
+                <!-- Lista tabular -->
+                <ListView Grid.Row="2"
                           x:Name="ProveedoresListView"
                           SelectionMode="Single">
                     <ListView.ItemTemplate>

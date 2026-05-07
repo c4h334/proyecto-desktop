@@ -3,7 +3,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using proyecto_desktop.Models;
+using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace proyecto_desktop
 {
@@ -17,29 +19,56 @@ namespace proyecto_desktop
         {
             this.InitializeComponent();
 
-            // Aplicar permanentemente el tema claro
+            // Tema claro
             if (this.Content is FrameworkElement rootElement)
             {
                 rootElement.RequestedTheme = ElementTheme.Light;
             }
 
-            // Aplicar fondo Mica
+            // Fondo Mica
             TrySetMicaBackdrop();
 
-            // Cargar datos de prueba
-            CargarDatosPrueba();
+            // Datos de ejemplo
+            productos.Add(new Producto
+            {
+                Nombre = "Silla",
+                Descripcion = "Silla de madera",
+                Cantidad = 10,
+                Precio = 25000,
+                Codigo = "P001",
+                Disponible = true,
+                Descuento = 5,
+                CantDescuento = 2,
+                Material = "Madera"
+            });
 
-            // Enlazar las listas visuales con sus respectivas colecciones
+            clientes.Add(new Cliente
+            {
+                Nombre = "Anderson",
+                Apellidos = "Monge",
+                Identificacion = "123456789",
+                Tel = "8888-8888",
+                DireccionCasa = "Cartago",
+                Correo = "correo@ejemplo.com"
+            });
+
+            proveedores.Add(new Proveedor
+            {
+                Nombre = "Carlos",
+                Apellidos = "Ramírez",
+                Identificacion = "111111111",
+                Tel = "7777-7777",
+                DireccionCasa = "San José",
+                Correo = "proveedor@empresa.com"
+            });
+
+            // Asignar ItemsSource a los ListView
             ProductosListView.ItemsSource = productos;
             ClientesListView.ItemsSource = clientes;
             ProveedoresListView.ItemsSource = proveedores;
 
-            // Definir la vista inicial
+            // Selección inicial
             TopNavView.SelectedItem = TopNavView.MenuItems[0];
-
-            VistaProductos.Visibility = Visibility.Visible;
-            VistaClientes.Visibility = Visibility.Collapsed;
-            VistaProveedores.Visibility = Visibility.Collapsed;
         }
 
         private bool TrySetMicaBackdrop()
@@ -55,97 +84,385 @@ namespace proyecto_desktop
             }
         }
 
-        private void CargarDatosPrueba()
-        {
-            productos.Add(new Producto
-            {
-                Nombre = "Silla",
-                Descripcion = "Silla de madera",
-                Cantidad = 10,
-                Precio = 25000,
-                Codigo = "P001",
-                Disponible = true,
-                Descuento = 5,
-                CantDescuento = 2,
-                Material = "Madera"
-            });
-
-            productos.Add(new Producto
-            {
-                Nombre = "Mesa",
-                Descripcion = "Mesa para comedor",
-                Cantidad = 4,
-                Precio = 75000,
-                Codigo = "P002",
-                Disponible = true,
-                Descuento = 0,
-                CantDescuento = 0,
-                Material = "Madera"
-            });
-
-            clientes.Add(new Cliente
-            {
-                Nombre = "Anderson Jesús",
-                Apellidos = "Monge Alvarado",
-                Identificacion = "123456789",
-                Tel = "8888-8888",
-                DireccionCasa = "Cartago",
-                Correo = "correo@ejemplo.com"
-            });
-
-            clientes.Add(new Cliente
-            {
-                Nombre = "Jose Gabriel",
-                Apellidos = "Chacón Calderón",
-                Identificacion = "987654321",
-                Tel = "8999-9999",
-                DireccionCasa = "San José",
-                Correo = "jose@ejemplo.com"
-            });
-
-            proveedores.Add(new Proveedor
-            {
-                Nombre = "Jacqueline María",
-                Apellidos = "Oviedo Miranda",
-                Identificacion = "111111111",
-                Tel = "7777-7777",
-                DireccionCasa = "San José",
-                Correo = "proveedor@empresa.com"
-            });
-
-            proveedores.Add(new Proveedor
-            {
-                Nombre = "Distribuidora",
-                Apellidos = "Central",
-                Identificacion = "222222222",
-                Tel = "7000-0000",
-                DireccionCasa = "Alajuela",
-                Correo = "contacto@distribuidora.com"
-            });
-        }
-
-        private void TopNavView_SelectionChanged(
-            NavigationView sender,
-            NavigationViewSelectionChangedEventArgs args)
+        private void TopNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItemContainer == null)
-            {
                 return;
-            }
 
             string tag = args.SelectedItemContainer.Tag?.ToString() ?? "";
 
-            VistaProductos.Visibility = tag == "Productos"
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            VistaProductos.Visibility = tag == "Productos" ? Visibility.Visible : Visibility.Collapsed;
+            VistaClientes.Visibility = tag == "Clientes" ? Visibility.Visible : Visibility.Collapsed;
+            VistaProveedores.Visibility = tag == "Proveedores" ? Visibility.Visible : Visibility.Collapsed;
+        }
 
-            VistaClientes.Visibility = tag == "Clientes"
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+        // =========================================================
+        // PRODUCTOS
+        // =========================================================
 
-            VistaProveedores.Visibility = tag == "Proveedores"
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+        private async void AgregarProducto_Click(object sender, RoutedEventArgs e)
+        {
+            await MostrarDialogoProducto(null);
+        }
+
+        private async void ModificarProducto_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProductosListView.SelectedItem is Producto producto)
+            {
+                await MostrarDialogoProducto(producto);
+                RefrescarProductos();
+            }
+        }
+
+        private async void EliminarProducto_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProductosListView.SelectedItem is Producto producto)
+            {
+                ContentDialog dialog = new ContentDialog
+                {
+                    Title = "Eliminar producto",
+                    Content = $"¿Desea eliminar el producto '{producto.Nombre}'?",
+                    PrimaryButtonText = "Eliminar",
+                    CloseButtonText = "Cancelar",
+                    XamlRoot = this.Content.XamlRoot
+                };
+
+                ContentDialogResult result = await dialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    productos.Remove(producto);
+                }
+            }
+        }
+
+        private async Task MostrarDialogoProducto(Producto? productoExistente)
+        {
+            bool esEdicion = productoExistente != null;
+
+            TextBox txtNombre = new() { Header = "Nombre", Text = productoExistente?.Nombre ?? "" };
+            TextBox txtDescripcion = new() { Header = "Descripción", Text = productoExistente?.Descripcion ?? "" };
+            NumberBox nbCantidad = new() { Header = "Cantidad", Value = productoExistente?.Cantidad ?? 0 };
+            NumberBox nbPrecio = new() { Header = "Precio", Value = (double)(productoExistente?.Precio ?? 0) };
+            TextBox txtCodigo = new() { Header = "Código", Text = productoExistente?.Codigo ?? "" };
+            CheckBox chkDisponible = new() { Content = "Disponible", IsChecked = productoExistente?.Disponible ?? false };
+            NumberBox nbDescuento = new() { Header = "Descuento", Value = (double)(productoExistente?.Descuento ?? 0) };
+            NumberBox nbCantDescuento = new() { Header = "CantDescuento", Value = productoExistente?.CantDescuento ?? 0 };
+            TextBox txtMaterial = new() { Header = "Material", Text = productoExistente?.Material ?? "" };
+
+            StackPanel panel = new()
+            {
+                Spacing = 20
+            };
+
+            panel.Children.Add(txtNombre);
+            panel.Children.Add(txtDescripcion);
+            panel.Children.Add(nbCantidad);
+            panel.Children.Add(nbPrecio);
+            panel.Children.Add(txtCodigo);
+            panel.Children.Add(chkDisponible);
+            panel.Children.Add(nbDescuento);
+            panel.Children.Add(nbCantDescuento);
+            panel.Children.Add(txtMaterial);
+
+            ContentDialog dialog = new()
+            {
+                Title = esEdicion ? "Modificar producto" : "Agregar producto",
+                Content = new ScrollViewer
+                {
+                    Content = panel,
+                    Height = 500
+                },
+                PrimaryButtonText = "Guardar",
+                CloseButtonText = "Cancelar",
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                if (esEdicion)
+                {
+                    productoExistente!.Nombre = txtNombre.Text;
+                    productoExistente.Descripcion = txtDescripcion.Text;
+                    productoExistente.Cantidad = (int)nbCantidad.Value;
+                    productoExistente.Precio = (decimal)nbPrecio.Value;
+                    productoExistente.Codigo = txtCodigo.Text;
+                    productoExistente.Disponible = chkDisponible.IsChecked ?? false;
+                    productoExistente.Descuento = (decimal)nbDescuento.Value;
+                    productoExistente.CantDescuento = (int)nbCantDescuento.Value;
+                    productoExistente.Material = txtMaterial.Text;
+                }
+                else
+                {
+                    productos.Add(new Producto
+                    {
+                        Nombre = txtNombre.Text,
+                        Descripcion = txtDescripcion.Text,
+                        Cantidad = (int)nbCantidad.Value,
+                        Precio = (decimal)nbPrecio.Value,
+                        Codigo = txtCodigo.Text,
+                        Disponible = chkDisponible.IsChecked ?? false,
+                        Descuento = (decimal)nbDescuento.Value,
+                        CantDescuento = (int)nbCantDescuento.Value,
+                        Material = txtMaterial.Text
+                    });
+                }
+            }
+        }
+
+        private void RefrescarProductos()
+        {
+            var seleccion = ProductosListView.SelectedItem;
+            ProductosListView.ItemsSource = null;
+            ProductosListView.ItemsSource = productos;
+            ProductosListView.SelectedItem = seleccion;
+        }
+
+        // =========================================================
+        // CLIENTES
+        // =========================================================
+
+        private async void AgregarCliente_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. Definimos los controles del formulario
+            TextBox txtNombre = new TextBox { Header = "Nombre", Margin = new Microsoft.UI.Xaml.Thickness(0, 10, 0, 0) };
+            TextBox txtDesc = new TextBox { Header = "Descripción", AcceptsReturn = true, Height = 100 };
+            NumberBox nbPrecio = new NumberBox { Header = "Precio", Value = 0 };
+
+            // 2. Creamos el contenedor y le damos el ANCHO que querías
+            StackPanel panel = new StackPanel
+            {
+                Spacing = 10,
+                Width = 500  // <-- AQUÍ controlas el ancho del formulario
+            };
+            panel.Children.Add(txtNombre);
+            panel.Children.Add(txtDesc);
+            panel.Children.Add(nbPrecio);
+
+            // 3. Configuramos el cuadro emergente (ContentDialog)
+            ContentDialog dialogo = new ContentDialog
+            {
+                Title = "NUEVO PRODUCTO",
+                Content = panel,
+                PrimaryButtonText = "Guardar",
+                CloseButtonText = "Cancelar",
+                XamlRoot = this.Content.XamlRoot // ESTO ES VITAL
+            };
+
+            // 4. Forzamos el ancho máximo del diálogo para que acepte los 500px del panel
+            dialogo.Resources["ContentDialogMaxWidth"] = 600.0;
+
+            // 5. Lo mostramos
+            await dialogo.ShowAsync();
+        }
+
+        private async void ModificarCliente_Click(object sender, RoutedEventArgs e)
+        {
+            if (ClientesListView.SelectedItem is Cliente cliente)
+            {
+                await MostrarDialogoCliente(cliente);
+                RefrescarClientes();
+            }
+        }
+
+        private async void EliminarCliente_Click(object sender, RoutedEventArgs e)
+        {
+            if (ClientesListView.SelectedItem is Cliente cliente)
+            {
+                ContentDialog dialog = new ContentDialog
+                {
+                    Title = "Eliminar cliente",
+                    Content = $"¿Desea eliminar a '{cliente.Nombre} {cliente.Apellidos}'?",
+                    PrimaryButtonText = "Eliminar",
+                    CloseButtonText = "Cancelar",
+                    XamlRoot = this.Content.XamlRoot
+                };
+
+                ContentDialogResult result = await dialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    clientes.Remove(cliente);
+                }
+            }
+        }
+
+        private async Task MostrarDialogoCliente(Cliente? clienteExistente)
+        {
+            bool esEdicion = clienteExistente != null;
+
+            TextBox txtNombre = new() { Header = "Nombre", Text = clienteExistente?.Nombre ?? "" };
+            TextBox txtApellidos = new() { Header = "Apellidos", Text = clienteExistente?.Apellidos ?? "" };
+            TextBox txtIdentificacion = new() { Header = "Identificación", Text = clienteExistente?.Identificacion ?? "" };
+            TextBox txtTel = new() { Header = "Tel", Text = clienteExistente?.Tel ?? "" };
+            TextBox txtDireccion = new() { Header = "Dirección casa", Text = clienteExistente?.DireccionCasa ?? "" };
+            TextBox txtCorreo = new() { Header = "Correo", Text = clienteExistente?.Correo ?? "" };
+
+            StackPanel panel = new()
+            {
+                Spacing = 10
+            };
+
+            panel.Children.Add(txtNombre);
+            panel.Children.Add(txtApellidos);
+            panel.Children.Add(txtIdentificacion);
+            panel.Children.Add(txtTel);
+            panel.Children.Add(txtDireccion);
+            panel.Children.Add(txtCorreo);
+
+            ContentDialog dialog = new()
+            {
+                Title = esEdicion ? "Modificar cliente" : "Agregar cliente",
+                Content = panel,
+                PrimaryButtonText = "Guardar",
+                CloseButtonText = "Cancelar",
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                if (esEdicion)
+                {
+                    clienteExistente!.Nombre = txtNombre.Text;
+                    clienteExistente.Apellidos = txtApellidos.Text;
+                    clienteExistente.Identificacion = txtIdentificacion.Text;
+                    clienteExistente.Tel = txtTel.Text;
+                    clienteExistente.DireccionCasa = txtDireccion.Text;
+                    clienteExistente.Correo = txtCorreo.Text;
+                }
+                else
+                {
+                    clientes.Add(new Cliente
+                    {
+                        Nombre = txtNombre.Text,
+                        Apellidos = txtApellidos.Text,
+                        Identificacion = txtIdentificacion.Text,
+                        Tel = txtTel.Text,
+                        DireccionCasa = txtDireccion.Text,
+                        Correo = txtCorreo.Text
+                    });
+                }
+            }
+        }
+
+        private void RefrescarClientes()
+        {
+            var seleccion = ClientesListView.SelectedItem;
+            ClientesListView.ItemsSource = null;
+            ClientesListView.ItemsSource = clientes;
+            ClientesListView.SelectedItem = seleccion;
+        }
+
+        // =========================================================
+        // PROVEEDORES
+        // =========================================================
+
+        private async void AgregarProveedor_Click(object sender, RoutedEventArgs e)
+        {
+            await MostrarDialogoProveedor(null);
+        }
+
+        private async void ModificarProveedor_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProveedoresListView.SelectedItem is Proveedor proveedor)
+            {
+                await MostrarDialogoProveedor(proveedor);
+                RefrescarProveedores();
+            }
+        }
+
+        private async void EliminarProveedor_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProveedoresListView.SelectedItem is Proveedor proveedor)
+            {
+                ContentDialog dialog = new ContentDialog
+                {
+                    Title = "Eliminar proveedor",
+                    Content = $"¿Desea eliminar a '{proveedor.Nombre} {proveedor.Apellidos}'?",
+                    PrimaryButtonText = "Eliminar",
+                    CloseButtonText = "Cancelar",
+                    XamlRoot = this.Content.XamlRoot
+                };
+
+                ContentDialogResult result = await dialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    proveedores.Remove(proveedor);
+                }
+            }
+        }
+
+        private async Task MostrarDialogoProveedor(Proveedor? proveedorExistente)
+        {
+            bool esEdicion = proveedorExistente != null;
+
+            TextBox txtNombre = new() { Header = "Nombre", Text = proveedorExistente?.Nombre ?? "" };
+            TextBox txtApellidos = new() { Header = "Apellidos", Text = proveedorExistente?.Apellidos ?? "" };
+            TextBox txtIdentificacion = new() { Header = "Identificación", Text = proveedorExistente?.Identificacion ?? "" };
+            TextBox txtTel = new() { Header = "Tel", Text = proveedorExistente?.Tel ?? "" };
+            TextBox txtDireccion = new() { Header = "Dirección casa", Text = proveedorExistente?.DireccionCasa ?? "" };
+            TextBox txtCorreo = new() { Header = "Correo", Text = proveedorExistente?.Correo ?? "" };
+
+            StackPanel panel = new()
+            {
+                Spacing = 10
+            };
+
+            panel.Children.Add(txtNombre);
+            panel.Children.Add(txtApellidos);
+            panel.Children.Add(txtIdentificacion);
+            panel.Children.Add(txtTel);
+            panel.Children.Add(txtDireccion);
+            panel.Children.Add(txtCorreo);
+
+            ContentDialog dialog = new()
+            {
+                Title = esEdicion ? "Modificar proveedor" : "Agregar proveedor",
+                Content = panel,
+                PrimaryButtonText = "Guardar",
+                CloseButtonText = "Cancelar",
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                if (esEdicion)
+                {
+                    proveedorExistente!.Nombre = txtNombre.Text;
+                    proveedorExistente.Apellidos = txtApellidos.Text;
+                    proveedorExistente.Identificacion = txtIdentificacion.Text;
+                    proveedorExistente.Tel = txtTel.Text;
+                    proveedorExistente.DireccionCasa = txtDireccion.Text;
+                    proveedorExistente.Correo = txtCorreo.Text;
+                }
+                else
+                {
+                    proveedores.Add(new Proveedor
+                    {
+                        Nombre = txtNombre.Text,
+                        Apellidos = txtApellidos.Text,
+                        Identificacion = txtIdentificacion.Text,
+                        Tel = txtTel.Text,
+                        DireccionCasa = txtDireccion.Text,
+                        Correo = txtCorreo.Text
+                    });
+                }
+            }
+        }
+
+        private void RefrescarProveedores()
+        {
+            var seleccion = ProveedoresListView.SelectedItem;
+            ProveedoresListView.ItemsSource = null;
+            ProveedoresListView.ItemsSource = proveedores;
+            ProveedoresListView.SelectedItem = seleccion;
         }
     }
 }
