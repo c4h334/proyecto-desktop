@@ -226,35 +226,30 @@ namespace proyecto_desktop
 
         private async void AgregarCliente_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Definimos los controles del formulario
             TextBox txtNombre = new TextBox { Header = "Nombre", Margin = new Microsoft.UI.Xaml.Thickness(0, 10, 0, 0) };
             TextBox txtDesc = new TextBox { Header = "Descripción", AcceptsReturn = true, Height = 100 };
             NumberBox nbPrecio = new NumberBox { Header = "Precio", Value = 0 };
 
-            // 2. Creamos el contenedor y le damos el ANCHO que querías
             StackPanel panel = new StackPanel
             {
                 Spacing = 10,
-                Width = 500  // <-- AQUÍ controlas el ancho del formulario
+                Width = 500 
             };
             panel.Children.Add(txtNombre);
             panel.Children.Add(txtDesc);
             panel.Children.Add(nbPrecio);
 
-            // 3. Configuramos el cuadro emergente (ContentDialog)
             ContentDialog dialogo = new ContentDialog
             {
-                Title = "NUEVO PRODUCTO",
+                Title = "NUEVO CLIENTE",
                 Content = panel,
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
-                XamlRoot = this.Content.XamlRoot // ESTO ES VITAL
+                XamlRoot = this.Content.XamlRoot
             };
 
-            // 4. Forzamos el ancho máximo del diálogo para que acepte los 500px del panel
             dialogo.Resources["ContentDialogMaxWidth"] = 600.0;
 
-            // 5. Lo mostramos
             await dialogo.ShowAsync();
         }
 
