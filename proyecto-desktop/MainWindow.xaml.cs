@@ -1,12 +1,14 @@
 using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using proyecto_desktop.Models;
+using proyecto_desktop.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using proyecto_desktop.Services;
+using Windows.System;
 
 namespace proyecto_desktop
 {
@@ -21,9 +23,14 @@ namespace proyecto_desktop
         private readonly CustomerService _customerService = new();
         private readonly SupplierService _supplierService = new();
 
+        private AppWindow m_AppWindow;
+
         public MainWindow()
         {
             this.InitializeComponent();
+            m_AppWindow = this.AppWindow;
+
+            m_AppWindow.SetIcon("Assets/raul-vega-logo.ico");
 
             // Tema claro
             if (this.Content is FrameworkElement rootElement)
@@ -109,7 +116,8 @@ namespace proyecto_desktop
                     Content = $"¿Desea eliminar el producto '{producto.Nombre}'?",
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
-                    XamlRoot = this.Content.XamlRoot
+                    XamlRoot = this.Content.XamlRoot,
+                    RequestedTheme = ElementTheme.Light // Forzar tema claro
                 };
 
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -149,7 +157,8 @@ namespace proyecto_desktop
                 Content = new ScrollViewer { Content = panel, Height = 500 },
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
-                XamlRoot = this.Content.XamlRoot
+                XamlRoot = this.Content.XamlRoot,
+                RequestedTheme = ElementTheme.Light // Forzar tema claro
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -226,7 +235,8 @@ namespace proyecto_desktop
                     Content = $"¿Desea eliminar a '{cliente.Nombre}'?",
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
-                    XamlRoot = this.Content.XamlRoot
+                    XamlRoot = this.Content.XamlRoot,
+                    RequestedTheme = ElementTheme.Light // Forzar tema claro
                 };
 
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -261,7 +271,8 @@ namespace proyecto_desktop
                 Content = panel,
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
-                XamlRoot = this.Content.XamlRoot
+                XamlRoot = this.Content.XamlRoot,
+                RequestedTheme = ElementTheme.Light // Forzar tema claro
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -332,7 +343,8 @@ namespace proyecto_desktop
                     Content = $"¿Desea eliminar a '{proveedor.Nombre}'?",
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
-                    XamlRoot = this.Content.XamlRoot
+                    XamlRoot = this.Content.XamlRoot,
+                    RequestedTheme = ElementTheme.Light // Forzar tema claro
                 };
 
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -368,7 +380,8 @@ namespace proyecto_desktop
                 Content = new ScrollViewer { Content = panel, Height = 500 },
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
-                XamlRoot = this.Content.XamlRoot
+                XamlRoot = this.Content.XamlRoot,
+                RequestedTheme = ElementTheme.Light // Forzar tema claro
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
