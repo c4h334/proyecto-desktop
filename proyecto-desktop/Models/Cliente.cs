@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace proyecto_desktop.Models
 {
-    internal class Cliente
+    public class Cliente
     {
+        public string Nombre { get; set; } = "";
+        public string Apellidos { get; set; } = "";
+        public string Identificacion { get; set; } = "";
+        public string Tel { get; set; } = "";
+        public string DireccionCasa { get; set; } = "";
+        public string Correo { get; set; } = "";
     }
 }
