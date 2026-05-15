@@ -13,9 +13,13 @@ namespace proyecto_desktop
     public sealed partial class MainWindow : Window
     {
         private ObservableCollection<Producto> productos = new();
-        private readonly ProductService _productService = new();
         private ObservableCollection<Cliente> clientes = new();
         private ObservableCollection<Proveedor> proveedores = new();
+
+        // Servicios para cada entidad
+        private readonly ProductService _productService = new();
+        private readonly CustomerService _customerService = new();
+        private readonly SupplierService _supplierService = new();
 
         public MainWindow()
         {
@@ -30,17 +34,23 @@ namespace proyecto_desktop
             // Fondo Mica
             TrySetMicaBackdrop();
 
-            ProductosListView.ItemsSource = productos;
-
-            _ = CargarProductosDesdeApi();
-
             // Asignar ItemsSource a los ListView
             ProductosListView.ItemsSource = productos;
             ClientesListView.ItemsSource = clientes;
             ProveedoresListView.ItemsSource = proveedores;
 
+            // Cargar TODAS las listas desde la API
+            _ = CargarDatosInicialesAsync();
+
             // Selección inicial
             TopNavView.SelectedItem = TopNavView.MenuItems[0];
+        }
+
+        private async Task CargarDatosInicialesAsync()
+        {
+            await CargarProductosDesdeApi();
+            await CargarClientesDesdeApi();
+            await CargarProveedoresDesdeApi();
         }
 
         private bool TrySetMicaBackdrop()
@@ -50,17 +60,12 @@ namespace proyecto_desktop
                 this.SystemBackdrop = new MicaBackdrop();
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 
         private void TopNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            if (args.SelectedItemContainer == null)
-                return;
-
+            if (args.SelectedItemContainer == null) return;
             string tag = args.SelectedItemContainer.Tag?.ToString() ?? "";
 
             VistaProductos.Visibility = tag == "Productos" ? Visibility.Visible : Visibility.Collapsed;
@@ -72,17 +77,25 @@ namespace proyecto_desktop
         // PRODUCTOS
         // =========================================================
 
-        private async void AgregarProducto_Click(object sender, RoutedEventArgs e)
+        private async Task CargarProductosDesdeApi()
         {
-            await MostrarDialogoProducto(null);
+            try
+            {
+                var listaApi = await _productService.GetProductosAsync();
+                productos.Clear();
+                foreach (var p in listaApi) productos.Add(p);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Productos: {ex.Message}"); }
         }
+
+        private async void AgregarProducto_Click(object sender, RoutedEventArgs e) => await MostrarDialogoProducto(null);
 
         private async void ModificarProducto_Click(object sender, RoutedEventArgs e)
         {
             if (ProductosListView.SelectedItem is Producto producto)
             {
                 await MostrarDialogoProducto(producto);
-                RefrescarProductos();
+                RefrescarLista(ProductosListView, productos);
             }
         }
 
@@ -90,7 +103,7 @@ namespace proyecto_desktop
         {
             if (ProductosListView.SelectedItem is Producto producto)
             {
-                ContentDialog dialog = new ContentDialog
+                ContentDialog dialog = new()
                 {
                     Title = "Eliminar producto",
                     Content = $"¿Desea eliminar el producto '{producto.Nombre}'?",
@@ -99,25 +112,15 @@ namespace proyecto_desktop
                     XamlRoot = this.Content.XamlRoot
                 };
 
-                ContentDialogResult result = await dialog.ShowAsync();
-
-                if (result == ContentDialogResult.Primary)
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
                     try
                     {
-                        // 1. Eliminar en el Backend (API)
                         if (producto.ProductResourceId.HasValue)
-                        {
                             await _productService.DeleteProductoAsync(producto.ProductResourceId.Value);
-                        }
-
-                        // 2. Eliminar de la lista local
                         productos.Remove(producto);
                     }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}");
-                    }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}"); }
                 }
             }
         }
@@ -125,7 +128,6 @@ namespace proyecto_desktop
         private async Task MostrarDialogoProducto(Producto? productoExistente)
         {
             bool esEdicion = productoExistente != null;
-
             TextBox txtNombre = new() { Header = "Nombre", Text = productoExistente?.Nombre ?? "" };
             TextBox txtDescripcion = new() { Header = "Descripción", Text = productoExistente?.Descripcion ?? "" };
             NumberBox nbCantidad = new() { Header = "Cantidad", Value = productoExistente?.Cantidad ?? 0 };
@@ -136,65 +138,40 @@ namespace proyecto_desktop
             NumberBox nbCantDescuento = new() { Header = "CantDescuento", Value = productoExistente?.CantDescuento ?? 0 };
             TextBox txtMaterial = new() { Header = "Material", Text = productoExistente?.Material ?? "" };
 
-            StackPanel panel = new()
-            {
-                Spacing = 20
-            };
-
-            panel.Children.Add(txtNombre);
-            panel.Children.Add(txtDescripcion);
-            panel.Children.Add(nbCantidad);
-            panel.Children.Add(nbPrecio);
-            panel.Children.Add(txtCodigo);
-            panel.Children.Add(chkDisponible);
-            panel.Children.Add(nbDescuento);
-            panel.Children.Add(nbCantDescuento);
-            panel.Children.Add(txtMaterial);
+            StackPanel panel = new() { Spacing = 20 };
+            panel.Children.Add(txtNombre); panel.Children.Add(txtDescripcion); panel.Children.Add(nbCantidad);
+            panel.Children.Add(nbPrecio); panel.Children.Add(txtCodigo); panel.Children.Add(chkDisponible);
+            panel.Children.Add(nbDescuento); panel.Children.Add(nbCantDescuento); panel.Children.Add(txtMaterial);
 
             ContentDialog dialog = new()
             {
                 Title = esEdicion ? "Modificar producto" : "Agregar producto",
-                Content = new ScrollViewer
-                {
-                    Content = panel,
-                    Height = 500
-                },
+                Content = new ScrollViewer { Content = panel, Height = 500 },
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
                 XamlRoot = this.Content.XamlRoot
             };
 
-            ContentDialogResult result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
                 try
                 {
                     if (esEdicion)
                     {
-                        // 1. Actualizar objeto localmente
-                        productoExistente!.Nombre = txtNombre.Text;
-                        productoExistente.Descripcion = txtDescripcion.Text;
-                        productoExistente.Cantidad = (int)nbCantidad.Value;
-                        productoExistente.Precio = (decimal)nbPrecio.Value;
-                        productoExistente.Codigo = txtCodigo.Text;
-                        productoExistente.Disponible = chkDisponible.IsChecked ?? false;
-                        productoExistente.Descuento = (decimal)nbDescuento.Value;
-                        productoExistente.CantDescuento = (int)nbCantDescuento.Value;
+                        productoExistente!.Nombre = txtNombre.Text; productoExistente.Descripcion = txtDescripcion.Text;
+                        productoExistente.Cantidad = (int)nbCantidad.Value; productoExistente.Precio = (decimal)nbPrecio.Value;
+                        productoExistente.Codigo = txtCodigo.Text; productoExistente.Disponible = chkDisponible.IsChecked ?? false;
+                        productoExistente.Descuento = (decimal)nbDescuento.Value; productoExistente.CantDescuento = (int)nbCantDescuento.Value;
                         productoExistente.Material = txtMaterial.Text;
 
-                        // 2. Enviar actualización al Backend (API)
                         if (productoExistente.ProductResourceId.HasValue)
-                        {
                             await _productService.UpdateProductoAsync(productoExistente.ProductResourceId.Value, productoExistente);
-                        }
                     }
                     else
                     {
-                        // 1. Crear nuevo objeto
                         var nuevoProducto = new Producto
                         {
-                            ProductResourceId = Guid.NewGuid(), // Se genera el ID para la base de datos
+                            ProductResourceId = Guid.NewGuid(),
                             Nombre = txtNombre.Text,
                             Descripcion = txtDescripcion.Text,
                             Cantidad = (int)nbCantidad.Value,
@@ -205,68 +182,37 @@ namespace proyecto_desktop
                             CantDescuento = (int)nbCantDescuento.Value,
                             Material = txtMaterial.Text
                         };
-
-                        // 2. Enviar al Backend (API)
                         var productoCreado = await _productService.AddProductoAsync(nuevoProducto);
-
-                        // 3. Reflejar en la lista local
                         productos.Add(productoCreado ?? nuevoProducto);
                     }
                 }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Error al guardar: {ex.Message}");
-                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al guardar: {ex.Message}"); }
             }
-        }
-
-        private void RefrescarProductos()
-        {
-            var seleccion = ProductosListView.SelectedItem;
-            ProductosListView.ItemsSource = null;
-            ProductosListView.ItemsSource = productos;
-            ProductosListView.SelectedItem = seleccion;
         }
 
         // =========================================================
         // CLIENTES
         // =========================================================
 
-        private async void AgregarCliente_Click(object sender, RoutedEventArgs e)
+        private async Task CargarClientesDesdeApi()
         {
-            TextBox txtNombre = new TextBox { Header = "Nombre", Margin = new Microsoft.UI.Xaml.Thickness(0, 10, 0, 0) };
-            TextBox txtDesc = new TextBox { Header = "Descripción", AcceptsReturn = true, Height = 100 };
-            NumberBox nbPrecio = new NumberBox { Header = "Precio", Value = 0 };
-
-            StackPanel panel = new StackPanel
+            try
             {
-                Spacing = 10,
-                Width = 500
-            };
-            panel.Children.Add(txtNombre);
-            panel.Children.Add(txtDesc);
-            panel.Children.Add(nbPrecio);
-
-            ContentDialog dialogo = new ContentDialog
-            {
-                Title = "NUEVO CLIENTE",
-                Content = panel,
-                PrimaryButtonText = "Guardar",
-                CloseButtonText = "Cancelar",
-                XamlRoot = this.Content.XamlRoot
-            };
-
-            dialogo.Resources["ContentDialogMaxWidth"] = 600.0;
-
-            await dialogo.ShowAsync();
+                var listaApi = await _customerService.GetClientesAsync();
+                clientes.Clear();
+                foreach (var c in listaApi) clientes.Add(c);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Clientes: {ex.Message}"); }
         }
+
+        private async void AgregarCliente_Click(object sender, RoutedEventArgs e) => await MostrarDialogoCliente(null);
 
         private async void ModificarCliente_Click(object sender, RoutedEventArgs e)
         {
             if (ClientesListView.SelectedItem is Cliente cliente)
             {
                 await MostrarDialogoCliente(cliente);
-                RefrescarClientes();
+                RefrescarLista(ClientesListView, clientes);
             }
         }
 
@@ -274,20 +220,24 @@ namespace proyecto_desktop
         {
             if (ClientesListView.SelectedItem is Cliente cliente)
             {
-                ContentDialog dialog = new ContentDialog
+                ContentDialog dialog = new()
                 {
                     Title = "Eliminar cliente",
-                    Content = $"¿Desea eliminar a '{cliente.Nombre} {cliente.Apellidos}'?",
+                    Content = $"¿Desea eliminar a '{cliente.Nombre}'?",
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
                     XamlRoot = this.Content.XamlRoot
                 };
 
-                ContentDialogResult result = await dialog.ShowAsync();
-
-                if (result == ContentDialogResult.Primary)
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
-                    clientes.Remove(cliente);
+                    try
+                    {
+                        if (cliente.CustomerResourceId.HasValue)
+                            await _customerService.DeleteClienteAsync(cliente.CustomerResourceId.Value);
+                        clientes.Remove(cliente);
+                    }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}"); }
                 }
             }
         }
@@ -295,25 +245,15 @@ namespace proyecto_desktop
         private async Task MostrarDialogoCliente(Cliente? clienteExistente)
         {
             bool esEdicion = clienteExistente != null;
-
-            TextBox txtNombre = new() { Header = "Nombre", Text = clienteExistente?.Nombre ?? "" };
-            TextBox txtApellidos = new() { Header = "Apellidos", Text = clienteExistente?.Apellidos ?? "" };
+            TextBox txtNombre = new() { Header = "Nombre Completo", Text = clienteExistente?.Nombre ?? "" };
             TextBox txtIdentificacion = new() { Header = "Identificación", Text = clienteExistente?.Identificacion ?? "" };
             TextBox txtTel = new() { Header = "Tel", Text = clienteExistente?.Tel ?? "" };
-            TextBox txtDireccion = new() { Header = "Dirección casa", Text = clienteExistente?.DireccionCasa ?? "" };
+            TextBox txtDireccion = new() { Header = "Dirección", Text = clienteExistente?.DireccionCasa ?? "" };
             TextBox txtCorreo = new() { Header = "Correo", Text = clienteExistente?.Correo ?? "" };
 
-            StackPanel panel = new()
-            {
-                Spacing = 10
-            };
-
-            panel.Children.Add(txtNombre);
-            panel.Children.Add(txtApellidos);
-            panel.Children.Add(txtIdentificacion);
-            panel.Children.Add(txtTel);
-            panel.Children.Add(txtDireccion);
-            panel.Children.Add(txtCorreo);
+            StackPanel panel = new() { Spacing = 10 };
+            panel.Children.Add(txtNombre); panel.Children.Add(txtIdentificacion);
+            panel.Children.Add(txtTel); panel.Children.Add(txtDireccion); panel.Children.Add(txtCorreo);
 
             ContentDialog dialog = new()
             {
@@ -324,57 +264,61 @@ namespace proyecto_desktop
                 XamlRoot = this.Content.XamlRoot
             };
 
-            ContentDialogResult result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
-                if (esEdicion)
+                try
                 {
-                    clienteExistente!.Nombre = txtNombre.Text;
-                    clienteExistente.Apellidos = txtApellidos.Text;
-                    clienteExistente.Identificacion = txtIdentificacion.Text;
-                    clienteExistente.Tel = txtTel.Text;
-                    clienteExistente.DireccionCasa = txtDireccion.Text;
-                    clienteExistente.Correo = txtCorreo.Text;
-                }
-                else
-                {
-                    clientes.Add(new Cliente
+                    if (esEdicion)
                     {
-                        Nombre = txtNombre.Text,
-                        Apellidos = txtApellidos.Text,
-                        Identificacion = txtIdentificacion.Text,
-                        Tel = txtTel.Text,
-                        DireccionCasa = txtDireccion.Text,
-                        Correo = txtCorreo.Text
-                    });
-                }
-            }
-        }
+                        clienteExistente!.Nombre = txtNombre.Text; clienteExistente.Identificacion = txtIdentificacion.Text;
+                        clienteExistente.Tel = txtTel.Text; clienteExistente.DireccionCasa = txtDireccion.Text;
+                        clienteExistente.Correo = txtCorreo.Text;
 
-        private void RefrescarClientes()
-        {
-            var seleccion = ClientesListView.SelectedItem;
-            ClientesListView.ItemsSource = null;
-            ClientesListView.ItemsSource = clientes;
-            ClientesListView.SelectedItem = seleccion;
+                        if (clienteExistente.CustomerResourceId.HasValue)
+                            await _customerService.UpdateClienteAsync(clienteExistente.CustomerResourceId.Value, clienteExistente);
+                    }
+                    else
+                    {
+                        var nuevoCliente = new Cliente
+                        {
+                            CustomerResourceId = Guid.NewGuid(),
+                            Nombre = txtNombre.Text,
+                            Identificacion = txtIdentificacion.Text,
+                            Tel = txtTel.Text,
+                            DireccionCasa = txtDireccion.Text,
+                            Correo = txtCorreo.Text
+                        };
+                        var clienteCreado = await _customerService.AddClienteAsync(nuevoCliente);
+                        clientes.Add(clienteCreado ?? nuevoCliente);
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al guardar cliente: {ex.Message}"); }
+            }
         }
 
         // =========================================================
         // PROVEEDORES
         // =========================================================
 
-        private async void AgregarProveedor_Click(object sender, RoutedEventArgs e)
+        private async Task CargarProveedoresDesdeApi()
         {
-            await MostrarDialogoProveedor(null);
+            try
+            {
+                var listaApi = await _supplierService.GetProveedoresAsync();
+                proveedores.Clear();
+                foreach (var p in listaApi) proveedores.Add(p);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Proveedores: {ex.Message}"); }
         }
+
+        private async void AgregarProveedor_Click(object sender, RoutedEventArgs e) => await MostrarDialogoProveedor(null);
 
         private async void ModificarProveedor_Click(object sender, RoutedEventArgs e)
         {
             if (ProveedoresListView.SelectedItem is Proveedor proveedor)
             {
                 await MostrarDialogoProveedor(proveedor);
-                RefrescarProveedores();
+                RefrescarLista(ProveedoresListView, proveedores);
             }
         }
 
@@ -382,20 +326,24 @@ namespace proyecto_desktop
         {
             if (ProveedoresListView.SelectedItem is Proveedor proveedor)
             {
-                ContentDialog dialog = new ContentDialog
+                ContentDialog dialog = new()
                 {
                     Title = "Eliminar proveedor",
-                    Content = $"¿Desea eliminar a '{proveedor.Nombre} {proveedor.Apellidos}'?",
+                    Content = $"¿Desea eliminar a '{proveedor.Nombre}'?",
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
                     XamlRoot = this.Content.XamlRoot
                 };
 
-                ContentDialogResult result = await dialog.ShowAsync();
-
-                if (result == ContentDialogResult.Primary)
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
-                    proveedores.Remove(proveedor);
+                    try
+                    {
+                        if (proveedor.SupplierResourceId.HasValue)
+                            await _supplierService.DeleteProveedorAsync(proveedor.SupplierResourceId.Value);
+                        proveedores.Remove(proveedor);
+                    }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}"); }
                 }
             }
         }
@@ -403,86 +351,66 @@ namespace proyecto_desktop
         private async Task MostrarDialogoProveedor(Proveedor? proveedorExistente)
         {
             bool esEdicion = proveedorExistente != null;
-
-            TextBox txtNombre = new() { Header = "Nombre", Text = proveedorExistente?.Nombre ?? "" };
-            TextBox txtApellidos = new() { Header = "Apellidos", Text = proveedorExistente?.Apellidos ?? "" };
-            TextBox txtIdentificacion = new() { Header = "Identificación", Text = proveedorExistente?.Identificacion ?? "" };
-            TextBox txtTel = new() { Header = "Tel", Text = proveedorExistente?.Tel ?? "" };
-            TextBox txtDireccion = new() { Header = "Dirección casa", Text = proveedorExistente?.DireccionCasa ?? "" };
+            TextBox txtNombre = new() { Header = "Nombre / Empresa", Text = proveedorExistente?.Nombre ?? "" };
+            TextBox txtIdentificacion = new() { Header = "Cédula Jurídica", Text = proveedorExistente?.Identificacion ?? "" };
+            TextBox txtTel = new() { Header = "Teléfono", Text = proveedorExistente?.Tel ?? "" };
+            TextBox txtDireccion = new() { Header = "Ubicación", Text = proveedorExistente?.Direccion ?? "" };
             TextBox txtCorreo = new() { Header = "Correo", Text = proveedorExistente?.Correo ?? "" };
+            TextBox txtListaProd = new() { Header = "Lista Productos", Text = proveedorExistente?.ProductList ?? "" };
 
-            StackPanel panel = new()
-            {
-                Spacing = 10
-            };
-
-            panel.Children.Add(txtNombre);
-            panel.Children.Add(txtApellidos);
-            panel.Children.Add(txtIdentificacion);
-            panel.Children.Add(txtTel);
-            panel.Children.Add(txtDireccion);
-            panel.Children.Add(txtCorreo);
+            StackPanel panel = new() { Spacing = 10 };
+            panel.Children.Add(txtNombre); panel.Children.Add(txtIdentificacion); panel.Children.Add(txtTel);
+            panel.Children.Add(txtDireccion); panel.Children.Add(txtCorreo); panel.Children.Add(txtListaProd);
 
             ContentDialog dialog = new()
             {
                 Title = esEdicion ? "Modificar proveedor" : "Agregar proveedor",
-                Content = panel,
+                Content = new ScrollViewer { Content = panel, Height = 500 },
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
                 XamlRoot = this.Content.XamlRoot
             };
 
-            ContentDialogResult result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
-                if (esEdicion)
+                try
                 {
-                    proveedorExistente!.Nombre = txtNombre.Text;
-                    proveedorExistente.Apellidos = txtApellidos.Text;
-                    proveedorExistente.Identificacion = txtIdentificacion.Text;
-                    proveedorExistente.Tel = txtTel.Text;
-                    proveedorExistente.DireccionCasa = txtDireccion.Text;
-                    proveedorExistente.Correo = txtCorreo.Text;
-                }
-                else
-                {
-                    proveedores.Add(new Proveedor
+                    if (esEdicion)
                     {
-                        Nombre = txtNombre.Text,
-                        Apellidos = txtApellidos.Text,
-                        Identificacion = txtIdentificacion.Text,
-                        Tel = txtTel.Text,
-                        DireccionCasa = txtDireccion.Text,
-                        Correo = txtCorreo.Text
-                    });
+                        proveedorExistente!.Nombre = txtNombre.Text; proveedorExistente.Identificacion = txtIdentificacion.Text;
+                        proveedorExistente.Tel = txtTel.Text; proveedorExistente.Direccion = txtDireccion.Text;
+                        proveedorExistente.Correo = txtCorreo.Text; proveedorExistente.ProductList = txtListaProd.Text;
+
+                        if (proveedorExistente.SupplierResourceId.HasValue)
+                            await _supplierService.UpdateProveedorAsync(proveedorExistente.SupplierResourceId.Value, proveedorExistente);
+                    }
+                    else
+                    {
+                        var nuevoProveedor = new Proveedor
+                        {
+                            SupplierResourceId = Guid.NewGuid(),
+                            Nombre = txtNombre.Text,
+                            Identificacion = txtIdentificacion.Text,
+                            Tel = txtTel.Text,
+                            Direccion = txtDireccion.Text,
+                            Correo = txtCorreo.Text,
+                            ProductList = txtListaProd.Text
+                        };
+                        var proveedorCreado = await _supplierService.AddProveedorAsync(nuevoProveedor);
+                        proveedores.Add(proveedorCreado ?? nuevoProveedor);
+                    }
                 }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al guardar proveedor: {ex.Message}"); }
             }
         }
 
-        private void RefrescarProveedores()
+        // Refrescar genérico
+        private void RefrescarLista(ListView list, object dataSource)
         {
-            var seleccion = ProveedoresListView.SelectedItem;
-            ProveedoresListView.ItemsSource = null;
-            ProveedoresListView.ItemsSource = proveedores;
-            ProveedoresListView.SelectedItem = seleccion;
-        }
-
-        private async Task CargarProductosDesdeApi()
-        {
-            try
-            {
-                var listaApi = await _productService.GetProductosAsync();
-                productos.Clear();
-                foreach (var p in listaApi)
-                {
-                    productos.Add(p);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error al cargar: {ex.Message}");
-            }
+            var seleccion = list.SelectedItem;
+            list.ItemsSource = null;
+            list.ItemsSource = dataSource;
+            list.SelectedItem = seleccion;
         }
     }
 }

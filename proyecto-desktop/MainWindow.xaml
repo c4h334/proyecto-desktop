@@ -269,10 +269,9 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0" Text="Nombre" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="1" Text="Apellidos" FontWeight="Bold"/>
                     <TextBlock Grid.Column="2" Text="Identificación" FontWeight="Bold"/>
                     <TextBlock Grid.Column="3" Text="Tel" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="4" Text="Dirección casa" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="4" Text="Dirección" FontWeight="Bold"/>
                     <TextBlock Grid.Column="5" Text="Correo" FontWeight="Bold"/>
                 </Grid>
 
@@ -297,7 +296,6 @@
                                     <TextBlock Grid.Column="1" Text="{x:Bind Apellidos}"/>
                                     <TextBlock Grid.Column="2" Text="{x:Bind Identificacion}"/>
                                     <TextBlock Grid.Column="3" Text="{x:Bind Tel}"/>
-                                    <TextBlock Grid.Column="4" Text="{x:Bind DireccionCasa}"/>
                                     <TextBlock Grid.Column="5" Text="{x:Bind Correo}"/>
                                 </Grid>
                             </Border>
