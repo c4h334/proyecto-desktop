@@ -6,12 +6,14 @@ using proyecto_desktop.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using proyecto_desktop.Services;
 
 namespace proyecto_desktop
 {
     public sealed partial class MainWindow : Window
     {
         private ObservableCollection<Producto> productos = new();
+        private readonly ProductService _productService = new();
         private ObservableCollection<Cliente> clientes = new();
         private ObservableCollection<Proveedor> proveedores = new();
 
@@ -28,39 +30,9 @@ namespace proyecto_desktop
             // Fondo Mica
             TrySetMicaBackdrop();
 
-            // Datos de ejemplo
-            productos.Add(new Producto
-            {
-                Nombre = "Silla",
-                Descripcion = "Silla de madera",
-                Cantidad = 10,
-                Precio = 25000,
-                Codigo = "P001",
-                Disponible = true,
-                Descuento = 5,
-                CantDescuento = 2,
-                Material = "Madera"
-            });
+            ProductosListView.ItemsSource = productos;
 
-            clientes.Add(new Cliente
-            {
-                Nombre = "Anderson",
-                Apellidos = "Monge",
-                Identificacion = "123456789",
-                Tel = "8888-8888",
-                DireccionCasa = "Cartago",
-                Correo = "correo@ejemplo.com"
-            });
-
-            proveedores.Add(new Proveedor
-            {
-                Nombre = "Carlos",
-                Apellidos = "Ramírez",
-                Identificacion = "111111111",
-                Tel = "7777-7777",
-                DireccionCasa = "San José",
-                Correo = "proveedor@empresa.com"
-            });
+            _ = CargarProductosDesdeApi();
 
             // Asignar ItemsSource a los ListView
             ProductosListView.ItemsSource = productos;
@@ -131,7 +103,21 @@ namespace proyecto_desktop
 
                 if (result == ContentDialogResult.Primary)
                 {
-                    productos.Remove(producto);
+                    try
+                    {
+                        // 1. Eliminar en el Backend (API)
+                        if (producto.ProductResourceId.HasValue)
+                        {
+                            await _productService.DeleteProductoAsync(producto.ProductResourceId.Value);
+                        }
+
+                        // 2. Eliminar de la lista local
+                        productos.Remove(producto);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}");
+                    }
                 }
             }
         }
@@ -182,32 +168,54 @@ namespace proyecto_desktop
 
             if (result == ContentDialogResult.Primary)
             {
-                if (esEdicion)
+                try
                 {
-                    productoExistente!.Nombre = txtNombre.Text;
-                    productoExistente.Descripcion = txtDescripcion.Text;
-                    productoExistente.Cantidad = (int)nbCantidad.Value;
-                    productoExistente.Precio = (decimal)nbPrecio.Value;
-                    productoExistente.Codigo = txtCodigo.Text;
-                    productoExistente.Disponible = chkDisponible.IsChecked ?? false;
-                    productoExistente.Descuento = (decimal)nbDescuento.Value;
-                    productoExistente.CantDescuento = (int)nbCantDescuento.Value;
-                    productoExistente.Material = txtMaterial.Text;
-                }
-                else
-                {
-                    productos.Add(new Producto
+                    if (esEdicion)
                     {
-                        Nombre = txtNombre.Text,
-                        Descripcion = txtDescripcion.Text,
-                        Cantidad = (int)nbCantidad.Value,
-                        Precio = (decimal)nbPrecio.Value,
-                        Codigo = txtCodigo.Text,
-                        Disponible = chkDisponible.IsChecked ?? false,
-                        Descuento = (decimal)nbDescuento.Value,
-                        CantDescuento = (int)nbCantDescuento.Value,
-                        Material = txtMaterial.Text
-                    });
+                        // 1. Actualizar objeto localmente
+                        productoExistente!.Nombre = txtNombre.Text;
+                        productoExistente.Descripcion = txtDescripcion.Text;
+                        productoExistente.Cantidad = (int)nbCantidad.Value;
+                        productoExistente.Precio = (decimal)nbPrecio.Value;
+                        productoExistente.Codigo = txtCodigo.Text;
+                        productoExistente.Disponible = chkDisponible.IsChecked ?? false;
+                        productoExistente.Descuento = (decimal)nbDescuento.Value;
+                        productoExistente.CantDescuento = (int)nbCantDescuento.Value;
+                        productoExistente.Material = txtMaterial.Text;
+
+                        // 2. Enviar actualización al Backend (API)
+                        if (productoExistente.ProductResourceId.HasValue)
+                        {
+                            await _productService.UpdateProductoAsync(productoExistente.ProductResourceId.Value, productoExistente);
+                        }
+                    }
+                    else
+                    {
+                        // 1. Crear nuevo objeto
+                        var nuevoProducto = new Producto
+                        {
+                            ProductResourceId = Guid.NewGuid(), // Se genera el ID para la base de datos
+                            Nombre = txtNombre.Text,
+                            Descripcion = txtDescripcion.Text,
+                            Cantidad = (int)nbCantidad.Value,
+                            Precio = (decimal)nbPrecio.Value,
+                            Codigo = txtCodigo.Text,
+                            Disponible = chkDisponible.IsChecked ?? false,
+                            Descuento = (decimal)nbDescuento.Value,
+                            CantDescuento = (int)nbCantDescuento.Value,
+                            Material = txtMaterial.Text
+                        };
+
+                        // 2. Enviar al Backend (API)
+                        var productoCreado = await _productService.AddProductoAsync(nuevoProducto);
+
+                        // 3. Reflejar en la lista local
+                        productos.Add(productoCreado ?? nuevoProducto);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error al guardar: {ex.Message}");
                 }
             }
         }
@@ -233,7 +241,7 @@ namespace proyecto_desktop
             StackPanel panel = new StackPanel
             {
                 Spacing = 10,
-                Width = 500 
+                Width = 500
             };
             panel.Children.Add(txtNombre);
             panel.Children.Add(txtDesc);
@@ -458,6 +466,23 @@ namespace proyecto_desktop
             ProveedoresListView.ItemsSource = null;
             ProveedoresListView.ItemsSource = proveedores;
             ProveedoresListView.SelectedItem = seleccion;
+        }
+
+        private async Task CargarProductosDesdeApi()
+        {
+            try
+            {
+                var listaApi = await _productService.GetProductosAsync();
+                productos.Clear();
+                foreach (var p in listaApi)
+                {
+                    productos.Add(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al cargar: {ex.Message}");
+            }
         }
     }
 }
