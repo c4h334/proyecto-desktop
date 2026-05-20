@@ -6,7 +6,9 @@ using Microsoft.UI.Xaml.Media;
 using proyecto_desktop.Models;
 using proyecto_desktop.Services;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
 
@@ -15,8 +17,13 @@ namespace proyecto_desktop
     public sealed partial class MainWindow : Window
     {
         private ObservableCollection<Producto> productos = new();
+        private List<Producto> _todosLosProductos = new();
+
         private ObservableCollection<Cliente> clientes = new();
+        private List<Cliente> _todosLosClientes = new();
+
         private ObservableCollection<Proveedor> proveedores = new();
+        private List<Proveedor> _todosLosProveedores = new();
 
         // Servicios para cada entidad
         private readonly ProductService _productService = new();
@@ -91,8 +98,34 @@ namespace proyecto_desktop
                 var listaApi = await _productService.GetProductosAsync();
                 productos.Clear();
                 foreach (var p in listaApi) productos.Add(p);
+
+                // Respaldo para la búsqueda
+                _todosLosProductos.Clear();
+                _todosLosProductos.AddRange(productos);
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Productos: {ex.Message}"); }
+        }
+
+        private void BuscarProductoBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                string filtro = sender.Text.Trim().ToLower();
+                productos.Clear();
+
+                if (string.IsNullOrWhiteSpace(filtro))
+                {
+                    foreach (var p in _todosLosProductos) productos.Add(p);
+                }
+                else
+                {
+                    var filtrados = _todosLosProductos.Where(p =>
+                        !string.IsNullOrEmpty(p.Codigo) &&
+                        p.Codigo.ToLower().Contains(filtro)).ToList();
+
+                    foreach (var p in filtrados) productos.Add(p);
+                }
+            }
         }
 
         private async void AgregarProducto_Click(object sender, RoutedEventArgs e) => await MostrarDialogoProducto(null);
@@ -117,7 +150,7 @@ namespace proyecto_desktop
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
                     XamlRoot = this.Content.XamlRoot,
-                    RequestedTheme = ElementTheme.Light // Forzar tema claro
+                    RequestedTheme = ElementTheme.Light
                 };
 
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -126,7 +159,9 @@ namespace proyecto_desktop
                     {
                         if (producto.ProductResourceId.HasValue)
                             await _productService.DeleteProductoAsync(producto.ProductResourceId.Value);
+
                         productos.Remove(producto);
+                        _todosLosProductos.Remove(producto);
                     }
                     catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}"); }
                 }
@@ -158,7 +193,7 @@ namespace proyecto_desktop
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
                 XamlRoot = this.Content.XamlRoot,
-                RequestedTheme = ElementTheme.Light // Forzar tema claro
+                RequestedTheme = ElementTheme.Light
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -192,7 +227,10 @@ namespace proyecto_desktop
                             Material = txtMaterial.Text
                         };
                         var productoCreado = await _productService.AddProductoAsync(nuevoProducto);
-                        productos.Add(productoCreado ?? nuevoProducto);
+                        var pFinal = productoCreado ?? nuevoProducto;
+
+                        productos.Add(pFinal);
+                        _todosLosProductos.Add(pFinal);
                     }
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al guardar: {ex.Message}"); }
@@ -210,8 +248,34 @@ namespace proyecto_desktop
                 var listaApi = await _customerService.GetClientesAsync();
                 clientes.Clear();
                 foreach (var c in listaApi) clientes.Add(c);
+
+                // Respaldo para la búsqueda
+                _todosLosClientes.Clear();
+                _todosLosClientes.AddRange(clientes);
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Clientes: {ex.Message}"); }
+        }
+
+        private void BuscarClienteBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                string filtro = sender.Text.Trim().ToLower();
+                clientes.Clear();
+
+                if (string.IsNullOrWhiteSpace(filtro))
+                {
+                    foreach (var c in _todosLosClientes) clientes.Add(c);
+                }
+                else
+                {
+                    var filtrados = _todosLosClientes.Where(c =>
+                        !string.IsNullOrEmpty(c.Identificacion) &&
+                        c.Identificacion.ToLower().Contains(filtro)).ToList();
+
+                    foreach (var c in filtrados) clientes.Add(c);
+                }
+            }
         }
 
         private async void AgregarCliente_Click(object sender, RoutedEventArgs e) => await MostrarDialogoCliente(null);
@@ -236,7 +300,7 @@ namespace proyecto_desktop
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
                     XamlRoot = this.Content.XamlRoot,
-                    RequestedTheme = ElementTheme.Light // Forzar tema claro
+                    RequestedTheme = ElementTheme.Light
                 };
 
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -245,7 +309,9 @@ namespace proyecto_desktop
                     {
                         if (cliente.CustomerResourceId.HasValue)
                             await _customerService.DeleteClienteAsync(cliente.CustomerResourceId.Value);
+
                         clientes.Remove(cliente);
+                        _todosLosClientes.Remove(cliente);
                     }
                     catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}"); }
                 }
@@ -272,7 +338,7 @@ namespace proyecto_desktop
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
                 XamlRoot = this.Content.XamlRoot,
-                RequestedTheme = ElementTheme.Light // Forzar tema claro
+                RequestedTheme = ElementTheme.Light
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -300,7 +366,10 @@ namespace proyecto_desktop
                             Correo = txtCorreo.Text
                         };
                         var clienteCreado = await _customerService.AddClienteAsync(nuevoCliente);
-                        clientes.Add(clienteCreado ?? nuevoCliente);
+                        var cFinal = clienteCreado ?? nuevoCliente;
+
+                        clientes.Add(cFinal);
+                        _todosLosClientes.Add(cFinal);
                     }
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al guardar cliente: {ex.Message}"); }
@@ -318,8 +387,34 @@ namespace proyecto_desktop
                 var listaApi = await _supplierService.GetProveedoresAsync();
                 proveedores.Clear();
                 foreach (var p in listaApi) proveedores.Add(p);
+
+                // Respaldo para la búsqueda
+                _todosLosProveedores.Clear();
+                _todosLosProveedores.AddRange(proveedores);
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Proveedores: {ex.Message}"); }
+        }
+
+        private void BuscarProveedorBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                string filtro = sender.Text.Trim().ToLower();
+                proveedores.Clear();
+
+                if (string.IsNullOrWhiteSpace(filtro))
+                {
+                    foreach (var p in _todosLosProveedores) proveedores.Add(p);
+                }
+                else
+                {
+                    var filtrados = _todosLosProveedores.Where(p =>
+                        !string.IsNullOrEmpty(p.Identificacion) &&
+                        p.Identificacion.ToLower().Contains(filtro)).ToList();
+
+                    foreach (var p in filtrados) proveedores.Add(p);
+                }
+            }
         }
 
         private async void AgregarProveedor_Click(object sender, RoutedEventArgs e) => await MostrarDialogoProveedor(null);
@@ -344,7 +439,7 @@ namespace proyecto_desktop
                     PrimaryButtonText = "Eliminar",
                     CloseButtonText = "Cancelar",
                     XamlRoot = this.Content.XamlRoot,
-                    RequestedTheme = ElementTheme.Light // Forzar tema claro
+                    RequestedTheme = ElementTheme.Light
                 };
 
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -353,7 +448,9 @@ namespace proyecto_desktop
                     {
                         if (proveedor.SupplierResourceId.HasValue)
                             await _supplierService.DeleteProveedorAsync(proveedor.SupplierResourceId.Value);
+
                         proveedores.Remove(proveedor);
+                        _todosLosProveedores.Remove(proveedor);
                     }
                     catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}"); }
                 }
@@ -381,7 +478,7 @@ namespace proyecto_desktop
                 PrimaryButtonText = "Guardar",
                 CloseButtonText = "Cancelar",
                 XamlRoot = this.Content.XamlRoot,
-                RequestedTheme = ElementTheme.Light // Forzar tema claro
+                RequestedTheme = ElementTheme.Light
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -410,7 +507,10 @@ namespace proyecto_desktop
                             ProductList = txtListaProd.Text
                         };
                         var proveedorCreado = await _supplierService.AddProveedorAsync(nuevoProveedor);
-                        proveedores.Add(proveedorCreado ?? nuevoProveedor);
+                        var pFinal = proveedorCreado ?? nuevoProveedor;
+
+                        proveedores.Add(pFinal);
+                        _todosLosProveedores.Add(pFinal);
                     }
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al guardar proveedor: {ex.Message}"); }
