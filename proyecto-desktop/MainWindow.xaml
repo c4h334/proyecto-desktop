@@ -6,303 +6,410 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:proyecto_desktop.Models"
     mc:Ignorable="d"
-    Title="Aplicación de escritorio">
+    Title="Gestión de la Cadena de Suministros - Raúl Vega">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#014681" />
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#014681" />
+        </Grid.Resources>
 
-        <!-- Encabezado -->
-        <Grid Grid.Row="0" Padding="16,12,16,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+        <NavigationView x:Name="TopNavView"
+                        PaneDisplayMode="Left"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        SelectionChanged="TopNavView_SelectionChanged"
+                        OpenPaneLength="250">
 
-            <!-- Logo -->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Image Source="Assets/logo.jpg" Height="80" Margin="0,0,10,0"/>
-            </StackPanel>
-
-            <!-- Navbar -->
-            <NavigationView x:Name="TopNavView"
-                            Grid.Column="1"
-                            PaneDisplayMode="Top"
-                            IsBackButtonVisible="Collapsed"
-                            IsSettingsVisible="False"
-                            SelectionChanged="TopNavView_SelectionChanged"
-                            HorizontalAlignment="Center"
-                            Width="Auto">
-                <NavigationView.MenuItems>
-                    <NavigationViewItem Content="Productos" Tag="Productos" Icon="Shop"/>
-                    <NavigationViewItem Content="Clientes" Tag="Clientes" Icon="Contact"/>
-                    <NavigationViewItem Content="Proveedores" Tag="Proveedores" Icon="People"/>
-                </NavigationView.MenuItems>
-                <NavigationView.Resources>
-                    <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />
-                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />
-                </NavigationView.Resources>
-            </NavigationView>
-        </Grid>
-
-        <!-- Contenido -->
-        <Grid Grid.Row="1" Padding="20">
-
-            <!-- Vista de productos -->
-            <Grid x:Name="VistaProductos" Visibility="Visible">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Botones -->
-                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,14">
-                    <Button Click="AgregarProducto_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Add"/>
-                            <TextBlock Text="Agregar"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Click="ModificarProducto_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Edit"/>
-                            <TextBlock Text="Modificar"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Click="EliminarProducto_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Delete"/>
-                            <TextBlock Text="Eliminar"/>
-                        </StackPanel>
-                    </Button>
+            <NavigationView.PaneHeader>
+                <StackPanel Orientation="Vertical" Padding="0,20,0,10" HorizontalAlignment="Center">
+                    <Image Source="Assets/raul-vega-logo.jpg" Height="70" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Raúl Vega" FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Cadena de Suministros" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center"/>
                 </StackPanel>
+            </NavigationView.PaneHeader>
 
-                <!-- Definición de columnas -->
-                <Grid Grid.Row="1" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="160"/>
-                        <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="120"/>
-                    </Grid.ColumnDefinitions>
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Productos" Tag="Productos" Icon="Shop"/>
+                <NavigationViewItem Content="Clientes" Tag="Clientes" Icon="Contact"/>
+                <NavigationViewItem Content="Proveedores" Tag="Proveedores" Icon="People"/>
+            </NavigationView.MenuItems>
 
-                    <TextBlock Grid.Column="0" Text="Nombre" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="1" Text="Descripción" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="2" Text="Cantidad" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="3" Text="Precio" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="4" Text="Código" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="5" Text="Disponible" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="6" Text="Descuento" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="7" Text="CantDescuento" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="8" Text="Material" FontWeight="Bold"/>
+            <Grid Padding="32,24,32,24">
+
+                <Grid x:Name="VistaProductos" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Gestión de Productos" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,24" Grid.Row="0"/>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                            <Button Click="AgregarProducto_Click" Style="{StaticResource AccentButtonStyle}" Background="#014681" CornerRadius="6" Height="36">
+                                <Button.Resources>
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#556BAB" />
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#556BAB" />
+                                </Button.Resources>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Add" />
+                                    <TextBlock Text="Agregar" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="ModificarProducto_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Edit" />
+                                    <TextBlock Text="Modificar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="EliminarProducto_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Foreground="#D13438">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Delete" />
+                                    <TextBlock Text="Eliminar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <AutoSuggestBox x:Name="BuscarProductoBox" 
+                                        Grid.Column="1" 
+                                        HorizontalAlignment="Right" 
+                                        Width="250" 
+                                        PlaceholderText="Buscar por código..." 
+                                        QueryIcon="Find" 
+                                        TextChanged="BuscarProductoBox_TextChanged"/>
+                    </Grid>
+
+                    <Grid Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Background="#556BAB" CornerRadius="8,8,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Código" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Descripción" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Cantidad" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Precio" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="5" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Disponible" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="6" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Descuento" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="7" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Monto descuento" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="8" Padding="16,12">
+                                <TextBlock Text="Material" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                        </Grid>
+
+                        <ListView Grid.Row="1"
+                                  x:Name="ProductosListView"
+                                  SelectionMode="Single"
+                                  ShowsScrollingPlaceholders="True"
+                                  Margin="0,0,0,8">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Producto">
+                                    <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="16,14">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="160"/>
+                                                <ColumnDefinition Width="90"/>
+                                                <ColumnDefinition Width="90"/>
+                                                <ColumnDefinition Width="90"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="120"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" Text="{x:Bind Codigo}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{x:Bind Nombre}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Column="2" Text="{x:Bind Descripcion}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
+                                            <TextBlock Grid.Column="3" Text="{x:Bind Cantidad}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4" Text="{x:Bind Precio}" VerticalAlignment="Center"/>
+                                            <CheckBox Grid.Column="5" IsChecked="{x:Bind Disponible, Mode=OneWay}" IsEnabled="False" VerticalAlignment="Center" MinWidth="0" MinHeight="0" Margin="0,-6,0,0"/>
+                                            <TextBlock Grid.Column="6" Text="{x:Bind Descuento}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="7" Text="{x:Bind CantDescuento}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="8" Text="{x:Bind Material}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
                 </Grid>
 
-                <!-- Lista tabular -->
-                <ListView Grid.Row="2"
-                          x:Name="ProductosListView"
-                          SelectionMode="Single">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Producto">
-                            <Border BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="8">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="120"/>
-                                        <ColumnDefinition Width="160"/>
-                                        <ColumnDefinition Width="90"/>
-                                        <ColumnDefinition Width="90"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="90"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="120"/>
-                                        <ColumnDefinition Width="120"/>
-                                    </Grid.ColumnDefinitions>
+                <Grid x:Name="VistaClientes" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Column="0" Text="{x:Bind Nombre}"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind Descripcion}"/>
-                                    <TextBlock Grid.Column="2" Text="{x:Bind Cantidad}"/>
-                                    <TextBlock Grid.Column="3" Text="{x:Bind Precio}"/>
-                                    <TextBlock Grid.Column="4" Text="{x:Bind Codigo}"/>
-                                    <CheckBox Grid.Column="5" IsChecked="{x:Bind Disponible, Mode=OneWay}" IsEnabled="False"/>
-                                    <TextBlock Grid.Column="6" Text="{x:Bind Descuento}"/>
-                                    <TextBlock Grid.Column="7" Text="{x:Bind CantDescuento}"/>
-                                    <TextBlock Grid.Column="8" Text="{x:Bind Material}"/>
-                                </Grid>
+                    <TextBlock Text="Gestión de Clientes" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,24" Grid.Row="0"/>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                            <Button Click="AgregarCliente_Click" Style="{StaticResource AccentButtonStyle}" Background="#014681" CornerRadius="6" Height="36">
+                                <Button.Resources>
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#556BAB" />
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#556BAB" />
+                                </Button.Resources>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Add" />
+                                    <TextBlock Text="Agregar" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="ModificarCliente_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Edit" />
+                                    <TextBlock Text="Modificar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="EliminarCliente_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Foreground="#D13438">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Delete" />
+                                    <TextBlock Text="Eliminar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <AutoSuggestBox x:Name="BuscarClienteBox" 
+                                        Grid.Column="1" 
+                                        HorizontalAlignment="Right" 
+                                        Width="250" 
+                                        PlaceholderText="Buscar por identificación..." 
+                                        QueryIcon="Find" 
+                                        TextChanged="BuscarClienteBox_TextChanged"/>
+                    </Grid>
+
+                    <Grid Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Background="#556BAB" CornerRadius="8,8,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="140"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="180"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Identificación" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                             </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
+                            <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Apellidos" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Teléfono" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Dirección" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="5" Padding="16,12">
+                                <TextBlock Text="Correo" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                        </Grid>
 
-            <!-- Vista de clientes -->
-            <Grid x:Name="VistaClientes" Visibility="Collapsed">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                        <ListView Grid.Row="1"
+                                  x:Name="ClientesListView"
+                                  SelectionMode="Single"
+                                  Margin="0,0,0,8">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Cliente">
+                                    <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="16,14">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="140"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="180"/>
+                                                <ColumnDefinition Width="180"/>
+                                            </Grid.ColumnDefinitions>
 
-                <!-- Botones -->
-                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,14">
-                    <Button Click="AgregarCliente_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Add"/>
-                            <TextBlock Text="Agregar"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Click="ModificarCliente_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Edit"/>
-                            <TextBlock Text="Modificar"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Click="EliminarCliente_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Delete"/>
-                            <TextBlock Text="Eliminar"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-                <!-- Definición de columnas -->
-                <Grid Grid.Row="1" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="130"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="180"/>
-                        <ColumnDefinition Width="180"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="Nombre" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="1" Text="Apellidos" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="2" Text="Identificación" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="3" Text="Tel" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="4" Text="Dirección casa" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="5" Text="Correo" FontWeight="Bold"/>
+                                            <TextBlock Grid.Column="0" Text="{x:Bind Identificacion}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{x:Bind Nombre}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Column="2" Text="{x:Bind Apellidos}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Column="3" Text="{x:Bind Tel}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4" Text="{x:Bind DireccionCasa}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
+                                            <TextBlock Grid.Column="5" Text="{x:Bind Correo}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
                 </Grid>
 
-                <!-- Lista tabular -->
-                <ListView Grid.Row="2"
-                          x:Name="ClientesListView"
-                          SelectionMode="Single">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Cliente">
-                            <Border BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="8">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="120"/>
-                                        <ColumnDefinition Width="140"/>
-                                        <ColumnDefinition Width="130"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="180"/>
-                                        <ColumnDefinition Width="180"/>
-                                    </Grid.ColumnDefinitions>
+                <Grid x:Name="VistaProveedores" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Column="0" Text="{x:Bind Nombre}"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind Apellidos}"/>
-                                    <TextBlock Grid.Column="2" Text="{x:Bind Identificacion}"/>
-                                    <TextBlock Grid.Column="3" Text="{x:Bind Tel}"/>
-                                    <TextBlock Grid.Column="4" Text="{x:Bind DireccionCasa}"/>
-                                    <TextBlock Grid.Column="5" Text="{x:Bind Correo}"/>
-                                </Grid>
+                    <TextBlock Text="Gestión de Proveedores" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,24" Grid.Row="0"/>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                            <Button Click="AgregarProveedor_Click" Style="{StaticResource AccentButtonStyle}" Background="#014681" CornerRadius="6" Height="36">
+                                <Button.Resources>
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#556BAB" />
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#556BAB" />
+                                </Button.Resources>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Add" />
+                                    <TextBlock Text="Agregar" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="ModificarProveedor_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Edit" />
+                                    <TextBlock Text="Modificar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="EliminarProveedor_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Foreground="#D13438">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Delete" />
+                                    <TextBlock Text="Eliminar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <AutoSuggestBox x:Name="BuscarProveedorBox" 
+                                        Grid.Column="1" 
+                                        HorizontalAlignment="Right" 
+                                        Width="250" 
+                                        PlaceholderText="Buscar por identificación..." 
+                                        QueryIcon="Find" 
+                                        TextChanged="BuscarProveedorBox_TextChanged"/>
+                    </Grid>
+
+                    <Grid Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Padding="0" Background="#556BAB" CornerRadius="8,8,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="140"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="180"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Identificación" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                             </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
+                            <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Apellidos" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Teléfono" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                                <TextBlock Text="Dirección" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                            <Border Grid.Column="5" Padding="16,12">
+                                <TextBlock Text="Correo" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                            </Border>
+                        </Grid>
 
-            <!-- Vista de proveedores -->
-            <Grid x:Name="VistaProveedores" Visibility="Collapsed">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                        <ListView Grid.Row="1"
+                                  x:Name="ProveedoresListView"
+                                  SelectionMode="Single"
+                                  Margin="0,0,0,8">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Proveedor">
+                                    <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="16,14">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="140"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="180"/>
+                                                <ColumnDefinition Width="180"/>
+                                            </Grid.ColumnDefinitions>
 
-                <!-- Botones -->
-                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,14">
-                    <Button Click="AgregarProveedor_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Add"/>
-                            <TextBlock Text="Agregar"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Click="ModificarProveedor_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Edit"/>
-                            <TextBlock Text="Modificar"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Click="EliminarProveedor_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <SymbolIcon Symbol="Delete"/>
-                            <TextBlock Text="Eliminar"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-                
-                <!-- Definición de columnas -->
-                <Grid Grid.Row="1" Margin="0,0,0,8" Padding="8" Background="#F3F3F3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="130"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="180"/>
-                        <ColumnDefinition Width="180"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="Nombre" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="2" Text="Identificación" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="3" Text="Tel" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="4" Text="Dirección" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="5" Text="Correo" FontWeight="Bold"/>
+                                            <TextBlock Grid.Column="0" Text="{x:Bind Identificacion}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{x:Bind Nombre}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Column="2" Text="{x:Bind Apellidos}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Column="3" Text="{x:Bind Tel}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4" Text="{x:Bind Direccion}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
+                                            <TextBlock Grid.Column="5" Text="{x:Bind Correo}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
                 </Grid>
-
-                <!-- Lista tabular -->
-                <ListView Grid.Row="2"
-                          x:Name="ProveedoresListView"
-                          SelectionMode="Single">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Proveedor">
-                            <Border BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="8">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="120"/>
-                                        <ColumnDefinition Width="140"/>
-                                        <ColumnDefinition Width="130"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="180"/>
-                                        <ColumnDefinition Width="180"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock Grid.Column="0" Text="{x:Bind Nombre}"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind Apellidos}"/>
-                                    <TextBlock Grid.Column="2" Text="{x:Bind Identificacion}"/>
-                                    <TextBlock Grid.Column="3" Text="{x:Bind Tel}"/>
-                                    <TextBlock Grid.Column="5" Text="{x:Bind Correo}"/>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
             </Grid>
-        </Grid>
+        </NavigationView>
     </Grid>
 </Window>
