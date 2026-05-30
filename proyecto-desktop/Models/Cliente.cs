@@ -9,10 +9,10 @@ namespace proyecto_desktop.Models
         public Guid? CustomerResourceId { get; set; }
 
         [JsonPropertyName("fullName")]
-        public string Nombre { get; set; } = ""; // Guarda el nombre completo
+        public string Nombre { get; set; } = "";
 
         [JsonIgnore]
-        public string Apellidos { get; set; } = ""; // Ignorado para la API, para no romper XAML
+        public string Apellidos { get; set; } = "";
 
         [JsonPropertyName("identification")]
         public string Identificacion { get; set; } = "";

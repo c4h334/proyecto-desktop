@@ -30,6 +30,9 @@ namespace proyecto_desktop
         private readonly CustomerService _customerService = new();
         private readonly SupplierService _supplierService = new();
 
+        // NUEVO: Servicio para subir imágenes a Contentful
+        private readonly ContentfulUploadService _contentfulUploadService = new();
+
         private AppWindow m_AppWindow;
 
         public MainWindow()
@@ -181,10 +184,45 @@ namespace proyecto_desktop
             NumberBox nbCantDescuento = new() { Header = "CantDescuento", Value = productoExistente?.CantDescuento ?? 0 };
             TextBox txtMaterial = new() { Header = "Material", Text = productoExistente?.Material ?? "" };
 
+            // NUEVO: Controles para subir imagen
+            Button btnBuscarImagen = new() { Content = "Seleccionar Imagen Local", Margin = new Thickness(0, 10, 0, 0) };
+            TextBlock txtRutaImagen = new()
+            {
+                Text = !string.IsNullOrEmpty(productoExistente?.Image) ? "Imagen actual: " + productoExistente.Image : "Ninguna imagen seleccionada",
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 12
+            };
+            string rutaImagenLocalSeleccionada = "";
+
+            // NUEVO: Evento para abrir el explorador de archivos de Windows
+            btnBuscarImagen.Click += async (s, e) =>
+            {
+                var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
+                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+
+                openPicker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+                openPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+                openPicker.FileTypeFilter.Add(".jpg");
+                openPicker.FileTypeFilter.Add(".jpeg");
+                openPicker.FileTypeFilter.Add(".png");
+
+                var file = await openPicker.PickSingleFileAsync();
+                if (file != null)
+                {
+                    rutaImagenLocalSeleccionada = file.Path;
+                    txtRutaImagen.Text = "Seleccionada: " + file.Name;
+                }
+            };
+
             StackPanel panel = new() { Spacing = 20 };
             panel.Children.Add(txtNombre); panel.Children.Add(txtDescripcion); panel.Children.Add(nbCantidad);
             panel.Children.Add(nbPrecio); panel.Children.Add(txtCodigo); panel.Children.Add(chkDisponible);
             panel.Children.Add(nbDescuento); panel.Children.Add(nbCantDescuento); panel.Children.Add(txtMaterial);
+
+            // Agregamos los controles de la imagen al panel
+            panel.Children.Add(btnBuscarImagen);
+            panel.Children.Add(txtRutaImagen);
 
             ContentDialog dialog = new()
             {
@@ -200,13 +238,31 @@ namespace proyecto_desktop
             {
                 try
                 {
+                    // NUEVO: Mantener la imagen original por defecto
+                    string urlImagenFinal = productoExistente?.Image ?? "";
+
+                    // NUEVO: Si el usuario eligió una nueva imagen local, se sube a Contentful antes de llamar a la API
+                    if (!string.IsNullOrEmpty(rutaImagenLocalSeleccionada))
+                    {
+                        string urlSubida = await _contentfulUploadService.SubirImagenLocalAsync(rutaImagenLocalSeleccionada);
+                        if (!string.IsNullOrEmpty(urlSubida))
+                        {
+                            urlImagenFinal = urlSubida;
+                        }
+                    }
+
                     if (esEdicion)
                     {
-                        productoExistente!.Nombre = txtNombre.Text; productoExistente.Descripcion = txtDescripcion.Text;
-                        productoExistente.Cantidad = (int)nbCantidad.Value; productoExistente.Precio = (decimal)nbPrecio.Value;
-                        productoExistente.Codigo = txtCodigo.Text; productoExistente.Disponible = chkDisponible.IsChecked ?? false;
-                        productoExistente.Descuento = (decimal)nbDescuento.Value; productoExistente.CantDescuento = (int)nbCantDescuento.Value;
+                        productoExistente!.Nombre = txtNombre.Text;
+                        productoExistente.Descripcion = txtDescripcion.Text;
+                        productoExistente.Cantidad = (int)nbCantidad.Value;
+                        productoExistente.Precio = (decimal)nbPrecio.Value;
+                        productoExistente.Codigo = txtCodigo.Text;
+                        productoExistente.Disponible = chkDisponible.IsChecked ?? false;
+                        productoExistente.Descuento = (decimal)nbDescuento.Value;
+                        productoExistente.CantDescuento = (int)nbCantDescuento.Value;
                         productoExistente.Material = txtMaterial.Text;
+                        productoExistente.Image = urlImagenFinal; // NUEVO: Guardamos la URL
 
                         if (productoExistente.ProductResourceId.HasValue)
                             await _productService.UpdateProductoAsync(productoExistente.ProductResourceId.Value, productoExistente);
@@ -224,7 +280,8 @@ namespace proyecto_desktop
                             Disponible = chkDisponible.IsChecked ?? false,
                             Descuento = (decimal)nbDescuento.Value,
                             CantDescuento = (int)nbCantDescuento.Value,
-                            Material = txtMaterial.Text
+                            Material = txtMaterial.Text,
+                            Image = urlImagenFinal // NUEVO: Guardamos la URL
                         };
                         var productoCreado = await _productService.AddProductoAsync(nuevoProducto);
                         var pFinal = productoCreado ?? nuevoProducto;
