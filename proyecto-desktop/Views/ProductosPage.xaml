@@ -1,0 +1,143 @@
+<Page
+    x:Class="proyecto_desktop.Views.ProductosPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:proyecto_desktop.Models">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Gestión de Productos" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,24" Grid.Row="0"/>
+
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                <Button Click="AgregarProducto_Click" Style="{StaticResource AccentButtonStyle}" Background="#014681" CornerRadius="6" Height="36">
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#556BAB" />
+                        <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#556BAB" />
+                    </Button.Resources>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <SymbolIcon Symbol="Add" />
+                        <TextBlock Text="Agregar" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Click="ModificarProducto_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <SymbolIcon Symbol="Edit" />
+                        <TextBlock Text="Modificar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Click="EliminarProducto_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Foreground="#D13438">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <SymbolIcon Symbol="Delete" />
+                        <TextBlock Text="Eliminar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <AutoSuggestBox x:Name="BuscarProductoBox" 
+                            Grid.Column="1" 
+                            HorizontalAlignment="Right" 
+                            Width="250" 
+                            PlaceholderText="Buscar por código..." 
+                            QueryIcon="Find" 
+                            TextChanged="BuscarProductoBox_TextChanged"/>
+        </Grid>
+
+        <Grid Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="#556BAB" CornerRadius="8,8,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="160"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Código" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Descripción" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Cantidad" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Precio" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="5" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Disponible" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="6" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Descuento" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="7" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                    <TextBlock Text="Monto descuento" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+                <Border Grid.Column="8" Padding="16,12">
+                    <TextBlock Text="Material" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                </Border>
+            </Grid>
+
+            <ListView Grid.Row="1"
+                      x:Name="ProductosListView"
+                      SelectionMode="Single"
+                      ShowsScrollingPlaceholders="True"
+                      Margin="0,0,0,8">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Producto">
+                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="16,14">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="{x:Bind Codigo}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{x:Bind Nombre}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="2" Text="{x:Bind Descripcion}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
+                                <TextBlock Grid.Column="3" Text="{x:Bind Cantidad}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="{x:Bind Precio}" VerticalAlignment="Center"/>
+                                <CheckBox Grid.Column="5" IsChecked="{x:Bind Disponible, Mode=OneWay}" IsEnabled="False" VerticalAlignment="Center" MinWidth="0" MinHeight="0" Margin="0,-6,0,0"/>
+                                <TextBlock Grid.Column="6" Text="{x:Bind Descuento}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="7" Text="{x:Bind CantDescuento}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="8" Text="{x:Bind Material}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </Grid>
+</Page>

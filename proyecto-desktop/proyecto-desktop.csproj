@@ -16,6 +16,10 @@
   <ItemGroup>
     <None Remove="Assets\raul-vega-logo.ico" />
     <None Remove="Assets\raul-vega-logo.jpg" />
+    <None Remove="Views\ClientesPage.xaml" />
+    <None Remove="Views\Login.xaml" />
+    <None Remove="Views\ProductosPage.xaml" />
+    <None Remove="Views\ProveedoresPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +47,7 @@
     <PackageReference Include="contentful.csharp" Version="8.6.1" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1721" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260416003" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\raul-vega-logo.ico">
@@ -51,6 +56,24 @@
     <Content Update="Assets\raul-vega-logo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Login.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ProveedoresPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ClientesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ProductosPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--
