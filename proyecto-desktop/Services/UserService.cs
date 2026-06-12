@@ -1,61 +1,85 @@
-using Microsoft.Data.SqlClient;
 using proyecto_desktop.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace proyecto_desktop.Services
 {
     public class UserService
     {
-        // Conexión al contenedor Docker de SQL Server publicado en el puerto 1434 local
-        private readonly string _connectionString = "Server=127.0.0.1,1434;Database=RaulVega;User Id=sa;Password=MiClaveSegura123*;TrustServerCertificate=True;Connection Timeout=5;";
+        private readonly HttpClient _httpClient;
+        private readonly string _baseUrl = "https://localhost:5001/api/users";
+
+        public UserService()
+        {
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+            _httpClient = new HttpClient(handler);
+        }
 
         public async Task<List<Usuario>> GetUsuariosAsync()
         {
-            var list = new List<Usuario>();
-
             try
             {
-                using (var conn = new SqlConnection(_connectionString))
-                {
-                    await conn.OpenAsync();
-                    
-                    // STRING_AGG agrupa los nombres de roles en una cadena separada por comas
-                    string query = @"
-                        SELECT u.UserResourceId, u.Name, u.Username, u.Email, 
-                               COALESCE(STRING_AGG(r.Name, ', '), '') AS Roles
-                        FROM Users u
-                        LEFT JOIN UserRoles ur ON u.UserId = ur.UserId
-                        LEFT JOIN Roles r ON ur.RoleId = r.RoleId
-                        GROUP BY u.UserId, u.UserResourceId, u.Name, u.Username, u.Email";
-
-                    using (var cmd = new SqlCommand(query, conn))
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var user = new Usuario
-                            {
-                                UserResourceId = reader.IsDBNull(0) ? Guid.Empty : reader.GetGuid(0),
-                                Name = reader.IsDBNull(1) ? "" : reader.GetString(1),
-                                Username = reader.IsDBNull(2) ? "" : reader.GetString(2),
-                                Email = reader.IsDBNull(3) ? "" : reader.GetString(3),
-                                Roles = reader.IsDBNull(4) ? "" : reader.GetString(4)
-                            };
-                            list.Add(user);
-                        }
-                    }
-                }
+                var response = await _httpClient.GetAsync(_baseUrl);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<Usuario>>() ?? new List<Usuario>();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"ERROR CONECTANDO A BASE DE DATOS DOCKER: {ex.Message}");
-                // Fallback automático si no se puede conectar
-                list = GetMockUsuarios();
+                System.Diagnostics.Debug.WriteLine($"ERROR API GET USERS: {ex.Message}");
+                return GetMockUsuarios();
+            }
+        }
+
+        public async Task<Usuario?> AddUsuarioAsync(Usuario usuario, string password)
+        {
+            var request = new
+            {
+                name = usuario.Name,
+                username = usuario.Username,
+                email = usuario.Email,
+                password = password
+            };
+
+            var response = await _httpClient.PostAsJsonAsync(_baseUrl, request);
+            response.EnsureSuccessStatusCode();
+            var creado = await response.Content.ReadFromJsonAsync<Usuario>();
+
+            // Si se creó el usuario y tiene roles específicos definidos, actualizarlos mediante PUT
+            if (creado != null && creado.UserResourceId.HasValue && usuario.RolesList.Count > 0)
+            {
+                creado.RolesList = usuario.RolesList;
+                await UpdateUsuarioAsync(creado.UserResourceId.Value, creado, null);
             }
 
-            return list;
+            return creado;
+        }
+
+        public async Task UpdateUsuarioAsync(Guid id, Usuario usuario, string? password)
+        {
+            var request = new
+            {
+                name = usuario.Name,
+                username = usuario.Username,
+                email = usuario.Email,
+                password = password,
+                roles = usuario.RolesList
+            };
+
+            var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/{id}", request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteUsuarioAsync(Guid id)
+        {
+            var response = await _httpClient.DeleteAsync($"{_baseUrl}/{id}");
+            response.EnsureSuccessStatusCode();
         }
 
         private List<Usuario> GetMockUsuarios()
@@ -68,7 +92,7 @@ namespace proyecto_desktop.Services
                     Name = "Raúl Vega",
                     Username = "raul.vega",
                     Email = "raul.vega@empresa.com",
-                    Roles = "Administrator, Support"
+                    RolesList = new List<string> { "Administrator", "Support" }
                 },
                 new Usuario
                 {
@@ -76,7 +100,7 @@ namespace proyecto_desktop.Services
                     Name = "Ana Gómez",
                     Username = "ana.gomez",
                     Email = "ana.gomez@empresa.com",
-                    Roles = "Support"
+                    RolesList = new List<string> { "Support" }
                 },
                 new Usuario
                 {
@@ -84,7 +108,7 @@ namespace proyecto_desktop.Services
                     Name = "Luis Mora",
                     Username = "luis.mora",
                     Email = "luis.mora@cliente.com",
-                    Roles = "Customer"
+                    RolesList = new List<string> { "Customer" }
                 },
                 new Usuario
                 {
@@ -92,7 +116,7 @@ namespace proyecto_desktop.Services
                     Name = "María Salas",
                     Username = "maria.salas",
                     Email = "maria.salas@cliente.com",
-                    Roles = "Customer"
+                    RolesList = new List<string> { "Customer" }
                 }
             };
         }

@@ -195,6 +195,33 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                            <Button Click="AgregarUsuario_Click" Style="{StaticResource AccentButtonStyle}" Background="#014681" CornerRadius="6" Height="36">
+                                <Button.Resources>
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#556BAB" />
+                                    <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#556BAB" />
+                                </Button.Resources>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Add" />
+                                    <TextBlock Text="Agregar" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="ModificarUsuario_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Edit" />
+                                    <TextBlock Text="Modificar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Click="EliminarUsuario_Click" CornerRadius="6" Height="36" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Foreground="#D13438">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="Delete" />
+                                    <TextBlock Text="Eliminar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
                         <AutoSuggestBox x:Name="BuscarUsuarioBox" 
                                         Grid.Column="1" 
                                         HorizontalAlignment="Right" 

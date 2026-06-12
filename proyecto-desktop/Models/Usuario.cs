@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace proyecto_desktop.Models
@@ -18,6 +19,9 @@ namespace proyecto_desktop.Models
         public string Email { get; set; } = "";
 
         [JsonPropertyName("roles")]
-        public string Roles { get; set; } = "";
+        public List<string> RolesList { get; set; } = [];
+
+        [JsonIgnore]
+        public string Roles => string.Join(", ", RolesList);
     }
 }

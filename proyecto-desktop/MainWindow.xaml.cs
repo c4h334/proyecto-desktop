@@ -366,6 +366,138 @@ namespace proyecto_desktop
             }
         }
 
+        private async void AgregarUsuario_Click(object sender, RoutedEventArgs e) => await MostrarDialogoUsuario(null);
+
+        private async void ModificarUsuario_Click(object sender, RoutedEventArgs e)
+        {
+            if (UsuariosListView.SelectedItem is Usuario usuario)
+            {
+                await MostrarDialogoUsuario(usuario);
+                RefrescarLista(UsuariosListView, usuarios);
+            }
+        }
+
+        private async void EliminarUsuario_Click(object sender, RoutedEventArgs e)
+        {
+            if (UsuariosListView.SelectedItem is Usuario usuario)
+            {
+                ContentDialog dialog = new()
+                {
+                    Title = "Eliminar usuario",
+                    Content = $"¿Desea eliminar al usuario '{usuario.Username}' ({usuario.Name})?",
+                    PrimaryButtonText = "Eliminar",
+                    CloseButtonText = "Cancelar",
+                    XamlRoot = this.Content.XamlRoot,
+                    RequestedTheme = ElementTheme.Light
+                };
+
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                {
+                    try
+                    {
+                        if (usuario.UserResourceId.HasValue)
+                            await _userService.DeleteUsuarioAsync(usuario.UserResourceId.Value);
+
+                        usuarios.Remove(usuario);
+                        _todosLosUsuarios.Remove(usuario);
+                    }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar usuario: {ex.Message}"); }
+                }
+            }
+        }
+
+        private async Task MostrarDialogoUsuario(Usuario? usuarioExistente)
+        {
+            bool esEdicion = usuarioExistente != null;
+            TextBox txtNombre = new() { Header = "Nombre Completo", Text = usuarioExistente?.Name ?? "" };
+            TextBox txtUsername = new() { Header = "Nombre de Usuario", Text = usuarioExistente?.Username ?? "" };
+            TextBox txtEmail = new() { Header = "Correo Electrónico", Text = usuarioExistente?.Email ?? "" };
+            
+            // Campo de contraseña
+            PasswordBox txtPassword = new() { Header = esEdicion ? "Nueva Contraseña (dejar en blanco para conservar)" : "Contraseña" };
+            
+            // Selección de roles
+            TextBlock lblRoles = new() { Text = "Roles", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, Margin = new Thickness(0, 10, 0, 5) };
+            CheckBox chkAdmin = new() { Content = "Administrator", IsChecked = usuarioExistente?.RolesList.Contains("Administrator") ?? false };
+            CheckBox chkSupport = new() { Content = "Support", IsChecked = usuarioExistente?.RolesList.Contains("Support") ?? false };
+            CheckBox chkCustomer = new() { Content = "Customer", IsChecked = usuarioExistente?.RolesList.Contains("Customer") ?? false };
+
+            StackPanel panel = new() { Spacing = 10 };
+            panel.Children.Add(txtNombre);
+            panel.Children.Add(txtUsername);
+            panel.Children.Add(txtEmail);
+            panel.Children.Add(txtPassword);
+            panel.Children.Add(lblRoles);
+            panel.Children.Add(chkAdmin);
+            panel.Children.Add(chkSupport);
+            panel.Children.Add(chkCustomer);
+
+            ContentDialog dialog = new()
+            {
+                Title = esEdicion ? "Modificar usuario" : "Agregar usuario",
+                Content = new ScrollViewer { Content = panel, MaxHeight = 400 },
+                PrimaryButtonText = "Guardar",
+                CloseButtonText = "Cancelar",
+                XamlRoot = this.Content.XamlRoot,
+                RequestedTheme = ElementTheme.Light
+            };
+
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                try
+                {
+                    // Recopilar roles seleccionados
+                    var rolesSeleccionados = new List<string>();
+                    if (chkAdmin.IsChecked == true) rolesSeleccionados.Add("Administrator");
+                    if (chkSupport.IsChecked == true) rolesSeleccionados.Add("Support");
+                    if (chkCustomer.IsChecked == true) rolesSeleccionados.Add("Customer");
+
+                    if (esEdicion)
+                    {
+                        usuarioExistente!.Name = txtNombre.Text;
+                        usuarioExistente.Username = txtUsername.Text;
+                        usuarioExistente.Email = txtEmail.Text;
+                        usuarioExistente.RolesList = rolesSeleccionados;
+
+                        string? pass = string.IsNullOrEmpty(txtPassword.Password) ? null : txtPassword.Password;
+                        if (usuarioExistente.UserResourceId.HasValue)
+                            await _userService.UpdateUsuarioAsync(usuarioExistente.UserResourceId.Value, usuarioExistente, pass);
+                    }
+                    else
+                    {
+                        var nuevoUsuario = new Usuario
+                        {
+                            UserResourceId = Guid.NewGuid(),
+                            Name = txtNombre.Text,
+                            Username = txtUsername.Text,
+                            Email = txtEmail.Text,
+                            RolesList = rolesSeleccionados
+                        };
+
+                        var creado = await _userService.AddUsuarioAsync(nuevoUsuario, txtPassword.Password);
+                        var uFinal = creado ?? nuevoUsuario;
+
+                        usuarios.Add(uFinal);
+                        _todosLosUsuarios.Add(uFinal);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error al guardar usuario: {ex.Message}");
+                    
+                    ContentDialog errorDialog = new()
+                    {
+                        Title = "Error al guardar",
+                        Content = $"No se pudo guardar el usuario. Detalle: {ex.Message}",
+                        CloseButtonText = "Aceptar",
+                        XamlRoot = this.Content.XamlRoot,
+                        RequestedTheme = ElementTheme.Light
+                    };
+                    await errorDialog.ShowAsync();
+                }
+            }
+        }
+
         // =========================================================
         // PROVEEDORES
         // =========================================================
