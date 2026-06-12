@@ -194,6 +194,25 @@ namespace proyecto_desktop
             };
             string rutaImagenLocalSeleccionada = "";
 
+            // Vista previa de imagen
+            Image imgPreview = new()
+            {
+                Width = 200,
+                Height = 150,
+                Stretch = Stretch.Uniform,
+                Margin = new Thickness(0, 10, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            if (!string.IsNullOrEmpty(productoExistente?.Image))
+            {
+                try
+                {
+                    imgPreview.Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(productoExistente.Image));
+                }
+                catch { }
+            }
+
             // NUEVO: Evento para abrir el explorador de archivos de Windows
             btnBuscarImagen.Click += async (s, e) =>
             {
@@ -212,6 +231,17 @@ namespace proyecto_desktop
                 {
                     rutaImagenLocalSeleccionada = file.Path;
                     txtRutaImagen.Text = "Seleccionada: " + file.Name;
+
+                    try
+                    {
+                        var bitmap = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
+                        using (var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
+                        {
+                            await bitmap.SetSourceAsync(stream);
+                        }
+                        imgPreview.Source = bitmap;
+                    }
+                    catch { }
                 }
             };
 
@@ -223,6 +253,7 @@ namespace proyecto_desktop
             // Agregamos los controles de la imagen al panel
             panel.Children.Add(btnBuscarImagen);
             panel.Children.Add(txtRutaImagen);
+            panel.Children.Add(imgPreview);
 
             ContentDialog dialog = new()
             {
