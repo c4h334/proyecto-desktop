@@ -19,15 +19,15 @@ namespace proyecto_desktop
         private ObservableCollection<Producto> productos = new();
         private List<Producto> _todosLosProductos = new();
 
-        private ObservableCollection<Cliente> clientes = new();
-        private List<Cliente> _todosLosClientes = new();
+        private ObservableCollection<Usuario> usuarios = new();
+        private List<Usuario> _todosLosUsuarios = new();
 
         private ObservableCollection<Proveedor> proveedores = new();
         private List<Proveedor> _todosLosProveedores = new();
 
         // Servicios para cada entidad
         private readonly ProductService _productService = new();
-        private readonly CustomerService _customerService = new();
+        private readonly UserService _userService = new();
         private readonly SupplierService _supplierService = new();
 
         // NUEVO: Servicio para subir imágenes a Contentful
@@ -53,7 +53,7 @@ namespace proyecto_desktop
 
             // Asignar ItemsSource a los ListView
             ProductosListView.ItemsSource = productos;
-            ClientesListView.ItemsSource = clientes;
+            UsuariosListView.ItemsSource = usuarios;
             ProveedoresListView.ItemsSource = proveedores;
 
             // Cargar TODAS las listas desde la API
@@ -66,7 +66,7 @@ namespace proyecto_desktop
         private async Task CargarDatosInicialesAsync()
         {
             await CargarProductosDesdeApi();
-            await CargarClientesDesdeApi();
+            await CargarUsuariosDesdeDb();
             await CargarProveedoresDesdeApi();
         }
 
@@ -86,7 +86,7 @@ namespace proyecto_desktop
             string tag = args.SelectedItemContainer.Tag?.ToString() ?? "";
 
             VistaProductos.Visibility = tag == "Productos" ? Visibility.Visible : Visibility.Collapsed;
-            VistaClientes.Visibility = tag == "Clientes" ? Visibility.Visible : Visibility.Collapsed;
+            VistaUsuarios.Visibility = tag == "Usuarios" ? Visibility.Visible : Visibility.Collapsed;
             VistaProveedores.Visibility = tag == "Proveedores" ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -295,141 +295,43 @@ namespace proyecto_desktop
         }
 
         // =========================================================
-        // CLIENTES
+        // USUARIOS Y ROLES
         // =========================================================
 
-        private async Task CargarClientesDesdeApi()
+        private async Task CargarUsuariosDesdeDb()
         {
             try
             {
-                var listaApi = await _customerService.GetClientesAsync();
-                clientes.Clear();
-                foreach (var c in listaApi) clientes.Add(c);
+                var listaDb = await _userService.GetUsuariosAsync();
+                usuarios.Clear();
+                foreach (var u in listaDb) usuarios.Add(u);
 
                 // Respaldo para la búsqueda
-                _todosLosClientes.Clear();
-                _todosLosClientes.AddRange(clientes);
+                _todosLosUsuarios.Clear();
+                _todosLosUsuarios.AddRange(usuarios);
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Clientes: {ex.Message}"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Usuarios: {ex.Message}"); }
         }
 
-        private void BuscarClienteBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void BuscarUsuarioBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 string filtro = sender.Text.Trim().ToLower();
-                clientes.Clear();
+                usuarios.Clear();
 
                 if (string.IsNullOrWhiteSpace(filtro))
                 {
-                    foreach (var c in _todosLosClientes) clientes.Add(c);
+                    foreach (var u in _todosLosUsuarios) usuarios.Add(u);
                 }
                 else
                 {
-                    var filtrados = _todosLosClientes.Where(c =>
-                        !string.IsNullOrEmpty(c.Identificacion) &&
-                        c.Identificacion.ToLower().Contains(filtro)).ToList();
+                    var filtrados = _todosLosUsuarios.Where(u =>
+                        (!string.IsNullOrEmpty(u.Username) && u.Username.ToLower().Contains(filtro)) ||
+                        (!string.IsNullOrEmpty(u.Name) && u.Name.ToLower().Contains(filtro))).ToList();
 
-                    foreach (var c in filtrados) clientes.Add(c);
+                    foreach (var u in filtrados) usuarios.Add(u);
                 }
-            }
-        }
-
-        private async void AgregarCliente_Click(object sender, RoutedEventArgs e) => await MostrarDialogoCliente(null);
-
-        private async void ModificarCliente_Click(object sender, RoutedEventArgs e)
-        {
-            if (ClientesListView.SelectedItem is Cliente cliente)
-            {
-                await MostrarDialogoCliente(cliente);
-                RefrescarLista(ClientesListView, clientes);
-            }
-        }
-
-        private async void EliminarCliente_Click(object sender, RoutedEventArgs e)
-        {
-            if (ClientesListView.SelectedItem is Cliente cliente)
-            {
-                ContentDialog dialog = new()
-                {
-                    Title = "Eliminar cliente",
-                    Content = $"¿Desea eliminar a '{cliente.Nombre}'?",
-                    PrimaryButtonText = "Eliminar",
-                    CloseButtonText = "Cancelar",
-                    XamlRoot = this.Content.XamlRoot,
-                    RequestedTheme = ElementTheme.Light
-                };
-
-                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-                {
-                    try
-                    {
-                        if (cliente.CustomerResourceId.HasValue)
-                            await _customerService.DeleteClienteAsync(cliente.CustomerResourceId.Value);
-
-                        clientes.Remove(cliente);
-                        _todosLosClientes.Remove(cliente);
-                    }
-                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al eliminar: {ex.Message}"); }
-                }
-            }
-        }
-
-        private async Task MostrarDialogoCliente(Cliente? clienteExistente)
-        {
-            bool esEdicion = clienteExistente != null;
-            TextBox txtNombre = new() { Header = "Nombre Completo", Text = clienteExistente?.Nombre ?? "" };
-            TextBox txtIdentificacion = new() { Header = "Identificación", Text = clienteExistente?.Identificacion ?? "" };
-            TextBox txtTel = new() { Header = "Tel", Text = clienteExistente?.Tel ?? "" };
-            TextBox txtDireccion = new() { Header = "Dirección", Text = clienteExistente?.DireccionCasa ?? "" };
-            TextBox txtCorreo = new() { Header = "Correo", Text = clienteExistente?.Correo ?? "" };
-
-            StackPanel panel = new() { Spacing = 10 };
-            panel.Children.Add(txtNombre); panel.Children.Add(txtIdentificacion);
-            panel.Children.Add(txtTel); panel.Children.Add(txtDireccion); panel.Children.Add(txtCorreo);
-
-            ContentDialog dialog = new()
-            {
-                Title = esEdicion ? "Modificar cliente" : "Agregar cliente",
-                Content = panel,
-                PrimaryButtonText = "Guardar",
-                CloseButtonText = "Cancelar",
-                XamlRoot = this.Content.XamlRoot,
-                RequestedTheme = ElementTheme.Light
-            };
-
-            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-            {
-                try
-                {
-                    if (esEdicion)
-                    {
-                        clienteExistente!.Nombre = txtNombre.Text; clienteExistente.Identificacion = txtIdentificacion.Text;
-                        clienteExistente.Tel = txtTel.Text; clienteExistente.DireccionCasa = txtDireccion.Text;
-                        clienteExistente.Correo = txtCorreo.Text;
-
-                        if (clienteExistente.CustomerResourceId.HasValue)
-                            await _customerService.UpdateClienteAsync(clienteExistente.CustomerResourceId.Value, clienteExistente);
-                    }
-                    else
-                    {
-                        var nuevoCliente = new Cliente
-                        {
-                            CustomerResourceId = Guid.NewGuid(),
-                            Nombre = txtNombre.Text,
-                            Identificacion = txtIdentificacion.Text,
-                            Tel = txtTel.Text,
-                            DireccionCasa = txtDireccion.Text,
-                            Correo = txtCorreo.Text
-                        };
-                        var clienteCreado = await _customerService.AddClienteAsync(nuevoCliente);
-                        var cFinal = clienteCreado ?? nuevoCliente;
-
-                        clientes.Add(cFinal);
-                        _todosLosClientes.Add(cFinal);
-                    }
-                }
-                catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error al guardar cliente: {ex.Message}"); }
             }
         }
 
