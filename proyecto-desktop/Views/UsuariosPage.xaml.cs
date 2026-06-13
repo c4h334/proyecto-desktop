@@ -117,7 +117,6 @@ namespace proyecto_desktop.Views
             // Selección de roles
             TextBlock lblRoles = new() { Text = "Roles", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, Margin = new Thickness(0, 10, 0, 5) };
             CheckBox chkAdmin = new() { Content = "Administrator", IsChecked = usuarioExistente?.RolesList.Contains("Administrator") ?? false };
-            CheckBox chkSupport = new() { Content = "Support", IsChecked = usuarioExistente?.RolesList.Contains("Support") ?? false };
             CheckBox chkCustomer = new() { Content = "Customer", IsChecked = usuarioExistente?.RolesList.Contains("Customer") ?? false };
 
             StackPanel panel = new() { Spacing = 10 };
@@ -127,7 +126,6 @@ namespace proyecto_desktop.Views
             panel.Children.Add(txtPassword);
             panel.Children.Add(lblRoles);
             panel.Children.Add(chkAdmin);
-            panel.Children.Add(chkSupport);
             panel.Children.Add(chkCustomer);
 
             ContentDialog dialog = new()
@@ -147,7 +145,6 @@ namespace proyecto_desktop.Views
                     // Recopilar roles seleccionados
                     var rolesSeleccionados = new List<string>();
                     if (chkAdmin.IsChecked == true) rolesSeleccionados.Add("Administrator");
-                    if (chkSupport.IsChecked == true) rolesSeleccionados.Add("Support");
                     if (chkCustomer.IsChecked == true) rolesSeleccionados.Add("Customer");
 
                     if (esEdicion)

@@ -3,26 +3,82 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="350" Spacing="20">
-            <Image Source="/Assets/raul-vega-logo.jpg" Width="100" Height="100" Margin="0,0,0,10"/>
-            <TextBlock Text="Acceso Administrativo" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
-            <TextBlock Text="Cadena de Suministros" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,-15,0,10"/>
+    <Grid>
+        <!-- Background Image resembling the Web Page -->
+        <Image Source="ms-appx:///Assets/background.jpg" Stretch="UniformToFill" />
+        <!-- Dark overlay to improve readability -->
+        <Grid Background="#66000000" />
 
-            <InfoBar x:Name="ErrorBar" IsOpen="False" Severity="Error" Title="Error" Message="Credenciales inválidas o no tienes rol de Administrador." />
+        <Border Background="#E6FFFFFF" 
+                CornerRadius="24" 
+                BorderBrush="#80FFFFFF" 
+                BorderThickness="1.5" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Width="400" 
+                Padding="32" 
+                Shadow="{ThemeResource CardShadow}">
+            
+            <StackPanel Spacing="16">
+                <!-- Title Header matching Web style -->
+                <TextBlock Text="Iniciar Sesión" 
+                           FontSize="28" 
+                           FontWeight="ExtraBold" 
+                           Foreground="#111827" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,4"/>
 
-            <TextBox x:Name="TxtUsername" Header="Usuario" PlaceholderText="Ingrese su usuario..." />
-            <PasswordBox x:Name="TxtPassword" Header="Contraseña" PlaceholderText="Ingrese su contraseña..." />
+                <!-- Link to Register matching Web style -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-8,0,12">
+                    <TextBlock Text="¿No tienes una cuenta? " FontSize="13" Foreground="#4B5563"/>
+                    <HyperlinkButton Content="Regístrate aquí" 
+                                     Click="BtnRegisterLink_Click" 
+                                     Padding="0"
+                                     FontSize="13" 
+                                     FontWeight="Medium"
+                                     Foreground="#1E3A8A"
+                                     VerticalAlignment="Center"/>
+                </StackPanel>
 
-			<Button x:Name="BtnLogin" Content="Iniciar Sesión" Width="350" Style="{StaticResource AccentButtonStyle}" Click="BtnLogin_Click" Margin="0,10,0,0"/>
+                <!-- InfoBar for displaying error messages -->
+                <InfoBar x:Name="ErrorBar" 
+                         IsOpen="False" 
+                         Severity="Error" 
+                         Title="Error de acceso" 
+                         Message="Acceso denegado o credenciales incorrectas." 
+                         Margin="0,0,0,8"/>
 
-			<HyperlinkButton Content="Registrar nuevo administrador"
-                             HorizontalAlignment="Center"
-                             Click="BtnRegisterLink_Click"
-                             FontSize="12"
-                             Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                <!-- Input fields with placeholder text and rounded corners -->
+                <TextBox x:Name="TxtUsername" 
+                         Header="Nombre de Usuario" 
+                         PlaceholderText="Tu nombre de usuario" 
+                         CornerRadius="8"
+                         Background="White"/>
 
-			<ProgressRing x:Name="LoadingRing" IsActive="False" HorizontalAlignment="Center" />
-        </StackPanel>
+                <PasswordBox x:Name="TxtPassword" 
+                             Header="Contraseña" 
+                             PlaceholderText="••••••••" 
+                             CornerRadius="8"
+                             Background="White"/>
+
+                <!-- Deep Blue Login Button (bg-blue-900 style) -->
+                <Button x:Name="BtnLogin" 
+                        Content="Ingresar" 
+                        Width="336" 
+                        Height="44"
+                        Background="#1E3A8A" 
+                        Foreground="White" 
+                        CornerRadius="8" 
+                        FontWeight="Bold" 
+                        FontSize="15"
+                        Click="BtnLogin_Click" 
+                        Margin="0,12,0,0"/>
+
+                <ProgressRing x:Name="LoadingRing" 
+                              IsActive="False" 
+                              HorizontalAlignment="Center" 
+                              Margin="0,8,0,0"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>

@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using proyecto_desktop.Services;
 
@@ -17,13 +17,21 @@ namespace proyecto_desktop.Views
 
             var response = await _authService.LoginAsync(TxtUsername.Text, TxtPassword.Password);
 
-            if (response != null && _authService.IsAdministrator(response.BearerToken))
+            if (response != null)
             {
-                MainWindow.Instance.MostrarMenuPrincipal(response.Name);
+                if (_authService.IsAdministrator(response.BearerToken))
+                {
+                    MainWindow.Instance?.MostrarMenuPrincipal(response.Name);
+                }
+                else
+                {
+                    ErrorBar.Message = "Acceso denegado. Esta aplicación está reservada únicamente para administradores.";
+                    ErrorBar.IsOpen = true;
+                }
             }
             else
             {
-                ErrorBar.Message = "Acceso denegado o credenciales incorrectas.";
+                ErrorBar.Message = "Usuario o contraseña incorrectos.";
                 ErrorBar.IsOpen = true;
             }
             LoadingRing.IsActive = false;
