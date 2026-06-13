@@ -1,0 +1,28 @@
+<Page
+    x:Class="proyecto_desktop.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="350" Spacing="20">
+            <Image Source="/Assets/raul-vega-logo.jpg" Width="100" Height="100" Margin="0,0,0,10"/>
+            <TextBlock Text="Acceso Administrativo" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+            <TextBlock Text="Cadena de Suministros" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,-15,0,10"/>
+
+            <InfoBar x:Name="ErrorBar" IsOpen="False" Severity="Error" Title="Error" Message="Credenciales inválidas o no tienes rol de Administrador." />
+
+            <TextBox x:Name="TxtUsername" Header="Usuario" PlaceholderText="Ingrese su usuario..." />
+            <PasswordBox x:Name="TxtPassword" Header="Contraseña" PlaceholderText="Ingrese su contraseña..." />
+
+			<Button x:Name="BtnLogin" Content="Iniciar Sesión" Width="350" Style="{StaticResource AccentButtonStyle}" Click="BtnLogin_Click" Margin="0,10,0,0"/>
+
+			<HyperlinkButton Content="Registrar nuevo administrador"
+                             HorizontalAlignment="Center"
+                             Click="BtnRegisterLink_Click"
+                             FontSize="12"
+                             Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+
+			<ProgressRing x:Name="LoadingRing" IsActive="False" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</Page>
