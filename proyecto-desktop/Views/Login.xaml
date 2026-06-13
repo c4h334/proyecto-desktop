@@ -16,8 +16,7 @@
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Center" 
                 Width="400" 
-                Padding="32" 
-                Shadow="{ThemeResource CardShadow}">
+                Padding="32">
             
             <StackPanel Spacing="16">
                 <!-- Title Header matching Web style -->
