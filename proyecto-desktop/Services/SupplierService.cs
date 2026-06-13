@@ -1,4 +1,4 @@
-﻿using proyecto_desktop.Models;
+using proyecto_desktop.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -10,7 +10,7 @@ namespace proyecto_desktop.Services
     public class SupplierService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://localhost:5001/api/suppliers";
+        private readonly string _baseUrl = "https://raulvega-f7f8dfcvhbb4cmaz.mexicocentral-01.azurewebsites.net/api/suppliers";
 
         public SupplierService()
         {

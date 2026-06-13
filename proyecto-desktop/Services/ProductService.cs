@@ -1,4 +1,4 @@
-﻿using proyecto_desktop.Models;
+using proyecto_desktop.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -12,7 +12,7 @@ namespace proyecto_desktop.Services
         private readonly HttpClient _httpClient;
 
         // La URL debe tener https y apuntar al puerto 5001
-        private readonly string _baseUrl = "https://localhost:5001/api/products";
+        private readonly string _baseUrl = "https://raulvega-f7f8dfcvhbb4cmaz.mexicocentral-01.azurewebsites.net/api/products";
 
         public ProductService()
         {

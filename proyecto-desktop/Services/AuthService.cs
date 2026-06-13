@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
@@ -14,13 +14,13 @@ namespace proyecto_desktop.Services
 
         public async Task<AuthResponse?> LoginAsync(string user, string pass)
         {
-            var res = await _httpClient.PostAsJsonAsync("https://127.0.0.1:5001/api/authorization/authorize", new { Username = user, Password = pass });
+            var res = await _httpClient.PostAsJsonAsync("https://raulvega-f7f8dfcvhbb4cmaz.mexicocentral-01.azurewebsites.net/api/authorization/authorize", new { Username = user, Password = pass });
             return res.IsSuccessStatusCode ? await res.Content.ReadFromJsonAsync<AuthResponse>() : null;
         }
 
         public async Task<bool> RegisterAdminAsync(string n, string u, string e, string p)
         {
-            var res = await _httpClient.PostAsJsonAsync("https://127.0.0.1:5001/api/users/admin", new { Name = n, Username = u, Email = e, Password = p });
+            var res = await _httpClient.PostAsJsonAsync("https://raulvega-f7f8dfcvhbb4cmaz.mexicocentral-01.azurewebsites.net/api/users/admin", new { Name = n, Username = u, Email = e, Password = p });
             return res.IsSuccessStatusCode;
         }
 
