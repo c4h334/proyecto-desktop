@@ -1,0 +1,28 @@
+﻿<Page
+    x:Class="proyecto_desktop.Views.RegisterAdminPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="350" Spacing="15">
+
+            <HyperlinkButton Click="BtnBack_Click" HorizontalAlignment="Left" Padding="0">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Back" />
+                    <TextBlock Text="Volver al Login" />
+                </StackPanel>
+            </HyperlinkButton>
+
+            <TextBlock Text="Registrar Administrador" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+            <InfoBar x:Name="AlertBar" IsOpen="False" />
+
+            <TextBox x:Name="TxtName" Header="Nombre Completo" />
+            <TextBox x:Name="TxtUsername" Header="Usuario" />
+            <TextBox x:Name="TxtEmail" Header="Correo Electrónico" />
+            <PasswordBox x:Name="TxtPassword" Header="Contraseña" />
+
+            <Button x:Name="BtnRegister" Content="Crear Administrador" Width="350" Style="{StaticResource AccentButtonStyle}" Click="BtnRegister_Click" Margin="0,15,0,0"/>
+            <ProgressRing x:Name="LoadingRing" IsActive="False" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</Page>
