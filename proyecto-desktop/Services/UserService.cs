@@ -24,17 +24,9 @@ namespace proyecto_desktop.Services
 
         public async Task<List<Usuario>> GetUsuariosAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync(_baseUrl);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<Usuario>>() ?? new List<Usuario>();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"ERROR API GET USERS: {ex.Message}");
-                return GetMockUsuarios();
-            }
+            var response = await _httpClient.GetAsync(_baseUrl);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<Usuario>>() ?? new List<Usuario>();
         }
 
         public async Task<Usuario?> AddUsuarioAsync(Usuario usuario, string password)
@@ -82,43 +74,5 @@ namespace proyecto_desktop.Services
             response.EnsureSuccessStatusCode();
         }
 
-        private List<Usuario> GetMockUsuarios()
-        {
-            return new List<Usuario>
-            {
-                new Usuario
-                {
-                    UserResourceId = Guid.NewGuid(),
-                    Name = "Raúl Vega",
-                    Username = "raul.vega",
-                    Email = "raul.vega@empresa.com",
-                    RolesList = new List<string> { "Administrator", "Support" }
-                },
-                new Usuario
-                {
-                    UserResourceId = Guid.NewGuid(),
-                    Name = "Ana Gómez",
-                    Username = "ana.gomez",
-                    Email = "ana.gomez@empresa.com",
-                    RolesList = new List<string> { "Support" }
-                },
-                new Usuario
-                {
-                    UserResourceId = Guid.NewGuid(),
-                    Name = "Luis Mora",
-                    Username = "luis.mora",
-                    Email = "luis.mora@cliente.com",
-                    RolesList = new List<string> { "Customer" }
-                },
-                new Usuario
-                {
-                    UserResourceId = Guid.NewGuid(),
-                    Name = "María Salas",
-                    Username = "maria.salas",
-                    Email = "maria.salas@cliente.com",
-                    RolesList = new List<string> { "Customer" }
-                }
-            };
-        }
     }
 }

@@ -1,6 +1,7 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using proyecto_desktop.Helpers;
 using proyecto_desktop.Models;
 using proyecto_desktop.Services;
 using System;
@@ -42,7 +43,10 @@ namespace proyecto_desktop.Views
                     foreach (var p in listaApi) { proveedores.Add(p); _todosLosProveedores.Add(p); }
                 });
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Proveedores: {ex.Message}"); }
+            catch (Exception ex)
+            {
+                await ErrorDialog.MostrarAsync(ex, this.Content.XamlRoot, "al cargar la lista de proveedores");
+            }
         }
 
         private void BuscarProveedorBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)

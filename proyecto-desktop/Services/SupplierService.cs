@@ -23,17 +23,9 @@ namespace proyecto_desktop.Services
 
         public async Task<List<Proveedor>> GetProveedoresAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync(_baseUrl);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<Proveedor>>() ?? new List<Proveedor>();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"ERROR API GET SUPPLIERS: {ex.Message}");
-                return new List<Proveedor>();
-            }
+            var response = await _httpClient.GetAsync(_baseUrl);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<Proveedor>>() ?? new List<Proveedor>();
         }
 
         public async Task<Proveedor?> AddProveedorAsync(Proveedor proveedor)

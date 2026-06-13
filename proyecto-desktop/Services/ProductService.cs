@@ -28,17 +28,9 @@ namespace proyecto_desktop.Services
         // LEER (GET)
         public async Task<List<Producto>> GetProductosAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync(_baseUrl);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<Producto>>() ?? new List<Producto>();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"ERROR API GET: {ex.Message}");
-                return new List<Producto>();
-            }
+            var response = await _httpClient.GetAsync(_baseUrl);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<Producto>>() ?? new List<Producto>();
         }
 
         // CREAR (POST)

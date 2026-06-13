@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using proyecto_desktop.Helpers;
 using proyecto_desktop.Models;
 using proyecto_desktop.Services;
 using System;
@@ -50,7 +51,10 @@ namespace proyecto_desktop.Views
                     foreach (var p in listaApi) { productos.Add(p); _todosLosProductos.Add(p); }
                 });
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Productos: {ex.Message}"); }
+            catch (Exception ex)
+            {
+                await ErrorDialog.MostrarAsync(ex, this.Content.XamlRoot, "al cargar la lista de productos");
+            }
         }
 
         private void BuscarProductoBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)

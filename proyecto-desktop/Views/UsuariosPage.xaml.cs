@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using proyecto_desktop.Helpers;
 using proyecto_desktop.Models;
 using proyecto_desktop.Services;
 using System;
@@ -42,7 +43,10 @@ namespace proyecto_desktop.Views
                     foreach (var u in listaApi) { usuarios.Add(u); _todosLosUsuarios.Add(u); }
                 });
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error Usuarios: {ex.Message}"); }
+            catch (Exception ex)
+            {
+                await ErrorDialog.MostrarAsync(ex, this.Content.XamlRoot, "al cargar la lista de usuarios");
+            }
         }
 
         private void BuscarUsuarioBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -176,17 +180,7 @@ namespace proyecto_desktop.Views
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error al guardar usuario: {ex.Message}");
-
-                    ContentDialog errorDialog = new()
-                    {
-                        Title = "Error al guardar",
-                        Content = $"No se pudo guardar el usuario. Detalle: {ex.Message}",
-                        CloseButtonText = "Aceptar",
-                        XamlRoot = this.Content.XamlRoot,
-                        RequestedTheme = ElementTheme.Light
-                    };
-                    await errorDialog.ShowAsync();
+                    await ErrorDialog.MostrarAsync(ex, this.Content.XamlRoot, "al guardar el usuario");
                 }
             }
         }
