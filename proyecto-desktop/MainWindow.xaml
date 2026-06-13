@@ -30,7 +30,7 @@
 
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Productos" Tag="Productos" Icon="Shop"/>
-                <NavigationViewItem Content="Clientes" Tag="Clientes" Icon="Contact"/>
+                <NavigationViewItem Content="Usuarios" Tag="Usuarios" Icon="Contact"/>
                 <NavigationViewItem Content="Proveedores" Tag="Proveedores" Icon="People"/>
             </NavigationView.MenuItems>
 

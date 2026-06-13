@@ -46,7 +46,7 @@ namespace proyecto_desktop
             switch (tag)
             {
                 case "Productos": ContentFrame.Navigate(typeof(Views.ProductosPage)); break;
-                case "Clientes": ContentFrame.Navigate(typeof(Views.ClientesPage)); break;
+                case "Usuarios": ContentFrame.Navigate(typeof(Views.UsuariosPage)); break;
                 case "Proveedores": ContentFrame.Navigate(typeof(Views.ProveedoresPage)); break;
             }
         }

@@ -16,7 +16,7 @@
   <ItemGroup>
     <None Remove="Assets\raul-vega-logo.ico" />
     <None Remove="Assets\raul-vega-logo.jpg" />
-    <None Remove="Views\ClientesPage.xaml" />
+    <None Remove="Views\UsuariosPage.xaml" />
     <None Remove="Views\Login.xaml" />
     <None Remove="Views\ProductosPage.xaml" />
     <None Remove="Views\ProveedoresPage.xaml" />
@@ -68,7 +68,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ClientesPage.xaml">
+    <Page Update="Views\UsuariosPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\ProductosPage.xaml">
