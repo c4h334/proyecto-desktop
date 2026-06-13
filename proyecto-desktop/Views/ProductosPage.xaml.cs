@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using proyecto_desktop.Models;
@@ -129,6 +129,25 @@ namespace proyecto_desktop.Views
             };
             string rutaImagenLocalSeleccionada = "";
 
+            // Vista previa de imagen
+            Image imgPreview = new()
+            {
+                Width = 200,
+                Height = 150,
+                Stretch = Microsoft.UI.Xaml.Media.Stretch.Uniform,
+                Margin = new Thickness(0, 10, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            if (!string.IsNullOrEmpty(productoExistente?.Image))
+            {
+                try
+                {
+                    imgPreview.Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(productoExistente.Image));
+                }
+                catch { }
+            }
+
             btnBuscarImagen.Click += async (s, e) =>
             {
                 var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
@@ -139,14 +158,29 @@ namespace proyecto_desktop.Views
                 openPicker.FileTypeFilter.Add(".jpg"); openPicker.FileTypeFilter.Add(".jpeg"); openPicker.FileTypeFilter.Add(".png");
 
                 var file = await openPicker.PickSingleFileAsync();
-                if (file != null) { rutaImagenLocalSeleccionada = file.Path; txtRutaImagen.Text = "Seleccionada: " + file.Name; }
+                if (file != null) 
+                { 
+                    rutaImagenLocalSeleccionada = file.Path; 
+                    txtRutaImagen.Text = "Seleccionada: " + file.Name; 
+                    
+                    try
+                    {
+                        var bitmap = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
+                        using (var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
+                        {
+                            await bitmap.SetSourceAsync(stream);
+                        }
+                        imgPreview.Source = bitmap;
+                    }
+                    catch { }
+                }
             };
 
             StackPanel panel = new() { Spacing = 20 };
             panel.Children.Add(txtNombre); panel.Children.Add(txtDescripcion); panel.Children.Add(nbCantidad);
             panel.Children.Add(nbPrecio); panel.Children.Add(txtCodigo); panel.Children.Add(chkDisponible);
             panel.Children.Add(nbDescuento); panel.Children.Add(nbCantDescuento); panel.Children.Add(txtMaterial);
-            panel.Children.Add(btnBuscarImagen); panel.Children.Add(txtRutaImagen);
+            panel.Children.Add(btnBuscarImagen); panel.Children.Add(txtRutaImagen); panel.Children.Add(imgPreview);
 
             ContentDialog dialog = new()
             {
