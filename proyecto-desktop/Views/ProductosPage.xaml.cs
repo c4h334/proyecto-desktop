@@ -22,8 +22,6 @@ namespace proyecto_desktop.Views
         public ProductosPage()
         {
             this.InitializeComponent();
-
-            // LA MAGIA AQUÍ: Evita que la página se destruya al cambiar de pestaña
             this.NavigationCacheMode = NavigationCacheMode.Required;
 
             ProductosListView.ItemsSource = productos;
@@ -32,7 +30,6 @@ namespace proyecto_desktop.Views
 
         private async void ProductosPage_Loaded(object sender, RoutedEventArgs e)
         {
-            // Solo carga de la API si la lista está vacía (la primera vez)
             if (productos.Count == 0)
             {
                 await CargarProductosDesdeApi();
@@ -133,7 +130,6 @@ namespace proyecto_desktop.Views
             };
             string rutaImagenLocalSeleccionada = "";
 
-            // Vista previa de imagen
             Image imgPreview = new()
             {
                 Width = 200,
@@ -235,7 +231,6 @@ namespace proyecto_desktop.Views
                     await _productService.AddProductoAsync(nuevoProducto);
                 }
 
-                // Recargar lista para mostrar los cambios automáticamente
                 await CargarProductosDesdeApi();
             }
         }

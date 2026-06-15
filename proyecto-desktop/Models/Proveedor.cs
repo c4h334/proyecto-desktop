@@ -11,9 +11,6 @@ namespace proyecto_desktop.Models
         [JsonPropertyName("companyName")]
         public string Nombre { get; set; } = "";
 
-        [JsonIgnore]
-        public string Apellidos { get; set; } = "";
-
         [JsonPropertyName("legalId")]
         public string Identificacion { get; set; } = "";
 

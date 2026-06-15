@@ -10,13 +10,10 @@ namespace proyecto_desktop.Services
     public class ProductService
     {
         private readonly HttpClient _httpClient;
-
-        // La URL debe tener https y apuntar al puerto 5001
         private readonly string _baseUrl = "https://raulvega-f7f8dfcvhbb4cmaz.mexicocentral-01.azurewebsites.net/api/products";
 
         public ProductService()
         {
-            // Ignoramos errores de certificado local para desarrollo
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
@@ -25,7 +22,6 @@ namespace proyecto_desktop.Services
             _httpClient = new HttpClient(handler);
         }
 
-        // LEER (GET)
         public async Task<List<Producto>> GetProductosAsync()
         {
             var response = await _httpClient.GetAsync(_baseUrl);
@@ -33,7 +29,6 @@ namespace proyecto_desktop.Services
             return await response.Content.ReadFromJsonAsync<List<Producto>>() ?? new List<Producto>();
         }
 
-        // CREAR (POST)
         public async Task<Producto> AddProductoAsync(Producto producto)
         {
             var response = await _httpClient.PostAsJsonAsync(_baseUrl, producto);
@@ -41,14 +36,12 @@ namespace proyecto_desktop.Services
             return await response.Content.ReadFromJsonAsync<Producto>();
         }
 
-        // ACTUALIZAR (PUT)
         public async Task UpdateProductoAsync(Guid id, Producto producto)
         {
             var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/{id}", producto);
             response.EnsureSuccessStatusCode();
         }
 
-        // ELIMINAR (DELETE)
         public async Task DeleteProductoAsync(Guid id)
         {
             var response = await _httpClient.DeleteAsync($"{_baseUrl}/{id}");

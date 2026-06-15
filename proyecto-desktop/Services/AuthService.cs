@@ -29,10 +29,10 @@ namespace proyecto_desktop.Services
             try
             {
                 var handler = new JwtSecurityTokenHandler();
-                // Leemos el token sin validarlo (solo queremos extraer los claims)
+                // Se lee primero el token
                 var jwtToken = handler.ReadJwtToken(token);
 
-                // Buscamos cualquier claim de tipo Role que tenga el valor "Administrator"
+                // Se verifica si el token contiene un claim de rol de administraor
                 return jwtToken.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Administrator");
             }
             catch (Exception ex)

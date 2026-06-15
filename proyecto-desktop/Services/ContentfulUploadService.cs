@@ -13,15 +13,16 @@ namespace proyecto_desktop.Services
     {
         private readonly ContentfulManagementClient _managementClient;
 
-        // Importante mantenerlo en "en-US" que es el default de tu Contentful
+        // Formato de localización por defecto para los campos en Contentful
         private readonly string _defaultLocale = "en-US";
 
         public ContentfulUploadService()
         {
             var httpClient = new HttpClient();
 
-            // Tu Personal Access Token (Management)
+            // Personal Access Token
             string cmaToken = "CFPAT-BfAk3mF-k9_vB4QgLyn0nrzKKc8kJ4XY7OanuDrlg6k";
+            // ID del espacio en Contentful
             string spaceId = "8rnsgo3hklme";
 
             _managementClient = new ContentfulManagementClient(httpClient, cmaToken, spaceId);
@@ -37,14 +38,11 @@ namespace proyecto_desktop.Services
                 var nombreArchivo = Path.GetFileName(rutaLocalArchivo);
                 string extension = Path.GetExtension(rutaLocalArchivo).ToLower();
                 string mimeType = extension == ".png" ? "image/png" : "image/jpeg";
-
-                // 1. SOLUCIÓN AL ERROR: Generamos un ID único que empiece con letras
                 string nuevoIdAsset = "img" + Guid.NewGuid().ToString("N");
 
-                // 2. Preparamos el Asset asignándole explícitamente el ID en SystemProperties
                 var asset = new ManagementAsset
                 {
-                    SystemProperties = new SystemProperties { Id = nuevoIdAsset }, // <-- AQUÍ CORREGIMOS EL ERROR
+                    SystemProperties = new SystemProperties { Id = nuevoIdAsset },
                     Title = new Dictionary<string, string> { { _defaultLocale, nombreArchivo } },
                     Files = new Dictionary<string, Contentful.Core.Models.File>
                     {
@@ -58,22 +56,14 @@ namespace proyecto_desktop.Services
                     }
                 };
 
-                // 3. Leemos los bytes físicos de la imagen local
                 byte[] fileBytes = System.IO.File.ReadAllBytes(rutaLocalArchivo);
-
-                // 4. Sube el binario y crea el Asset
                 var createdAsset = await _managementClient.UploadFileAndCreateAsset(asset, fileBytes);
-
-                // Le damos 2 segundos a los servidores de Contentful para procesar la imagen internamente
                 await Task.Delay(2000);
 
-                // 5. Obtenemos el asset refrescado para saber su versión exacta y publicarlo sin errores
+
                 var assetA_Publicar = await _managementClient.GetAsset(nuevoIdAsset);
                 var versionActual = assetA_Publicar.SystemProperties.Version ?? 1;
-
                 var publishedAsset = await _managementClient.PublishAsset(nuevoIdAsset, versionActual);
-
-                // 6. Extraer la URL pública resultante
                 string urlFinal = publishedAsset.Files[_defaultLocale].Url;
 
                 return urlFinal.StartsWith("http") ? urlFinal : $"https:{urlFinal}";

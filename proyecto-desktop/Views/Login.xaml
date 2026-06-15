@@ -4,9 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid>
-        <!-- Background Image resembling the Web Page -->
         <Image Source="ms-appx:///Assets/background.jpg" Stretch="UniformToFill" />
-        <!-- Dark overlay to improve readability -->
         <Grid Background="#66000000" />
 
         <Border Background="#E6FFFFFF" 
@@ -17,9 +15,8 @@
                 VerticalAlignment="Center" 
                 Width="400" 
                 Padding="32">
-            
+
             <StackPanel Spacing="16">
-                <!-- Title Header matching Web style -->
                 <TextBlock Text="Iniciar Sesión" 
                            FontSize="28" 
                            FontWeight="ExtraBold" 
@@ -27,7 +24,6 @@
                            HorizontalAlignment="Center" 
                            Margin="0,0,0,4"/>
 
-                <!-- Link to Register matching Web style -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-8,0,12">
                     <TextBlock Text="¿No tienes una cuenta? " FontSize="13" Foreground="#4B5563"/>
                     <HyperlinkButton Content="Regístrate aquí" 
@@ -39,7 +35,6 @@
                                      VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- InfoBar for displaying error messages -->
                 <InfoBar x:Name="ErrorBar" 
                          IsOpen="False" 
                          Severity="Error" 
@@ -47,7 +42,6 @@
                          Message="Acceso denegado o credenciales incorrectas." 
                          Margin="0,0,0,8"/>
 
-                <!-- Input fields with placeholder text and rounded corners -->
                 <TextBox x:Name="TxtUsername" 
                          Header="Nombre de Usuario" 
                          PlaceholderText="Tu nombre de usuario" 
@@ -60,7 +54,6 @@
                              CornerRadius="8"
                              Background="White"/>
 
-                <!-- Deep Blue Login Button (bg-blue-900 style) -->
                 <Button x:Name="BtnLogin" 
                         Content="Ingresar" 
                         Width="336" 

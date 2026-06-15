@@ -43,7 +43,6 @@ namespace proyecto_desktop.Services
             response.EnsureSuccessStatusCode();
             var creado = await response.Content.ReadFromJsonAsync<Usuario>();
 
-            // Si se creó el usuario y tiene roles específicos definidos, actualizarlos mediante PUT
             if (creado != null && creado.UserResourceId.HasValue && usuario.RolesList.Count > 0)
             {
                 creado.RolesList = usuario.RolesList;

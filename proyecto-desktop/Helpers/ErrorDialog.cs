@@ -8,9 +8,6 @@ namespace proyecto_desktop.Helpers
 {
     public static class ErrorDialog
     {
-        /// <summary>
-        /// Muestra un ContentDialog con un mensaje de error conciso según el tipo de excepción.
-        /// </summary>
         public static async Task MostrarAsync(Exception ex, XamlRoot xamlRoot, string contexto = "")
         {
             string titulo;

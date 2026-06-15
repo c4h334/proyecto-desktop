@@ -110,11 +110,7 @@ namespace proyecto_desktop.Views
             TextBox txtNombre = new() { Header = "Nombre Completo", Text = usuarioExistente?.Name ?? "" };
             TextBox txtUsername = new() { Header = "Nombre de Usuario", Text = usuarioExistente?.Username ?? "" };
             TextBox txtEmail = new() { Header = "Correo Electrónico", Text = usuarioExistente?.Email ?? "" };
-
-            // Campo de contraseña
             PasswordBox txtPassword = new() { Header = esEdicion ? "Nueva Contraseña (dejar en blanco para conservar)" : "Contraseña" };
-
-            // Selección de roles
             TextBlock lblRoles = new() { Text = "Roles", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, Margin = new Thickness(0, 10, 0, 5) };
             CheckBox chkAdmin = new() { Content = "Administrator", IsChecked = usuarioExistente?.RolesList.Contains("Administrator") ?? false };
             CheckBox chkCustomer = new() { Content = "Customer", IsChecked = usuarioExistente?.RolesList.Contains("Customer") ?? false };
@@ -142,7 +138,6 @@ namespace proyecto_desktop.Views
             {
                 try
                 {
-                    // Recopilar roles seleccionados
                     var rolesSeleccionados = new List<string>();
                     if (chkAdmin.IsChecked == true) rolesSeleccionados.Add("Administrator");
                     if (chkCustomer.IsChecked == true) rolesSeleccionados.Add("Customer");
@@ -172,7 +167,6 @@ namespace proyecto_desktop.Views
                         await _userService.AddUsuarioAsync(nuevoUsuario, txtPassword.Password);
                     }
 
-                    // Recargar lista para mostrar los cambios automáticamente
                     await CargarUsuariosDesdeApi();
                 }
                 catch (Exception ex)

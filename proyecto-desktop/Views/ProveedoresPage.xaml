@@ -64,8 +64,7 @@
             <Grid Grid.Row="0" Padding="0" Background="#556BAB" CornerRadius="8,8,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="180"/>
                     <ColumnDefinition Width="180"/>
@@ -78,15 +77,12 @@
                     <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
                 <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Apellidos" FontWeight="SemiBold" Foreground="#FFFFFF"/>
-                </Border>
-                <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
                     <TextBlock Text="Teléfono" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
                     <TextBlock Text="Dirección" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="5" Padding="16,12">
+                <Border Grid.Column="4" Padding="16,12">
                     <TextBlock Text="Correo" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
             </Grid>
@@ -101,8 +97,7 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="130"/>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition Width="140"/>
+                                    <ColumnDefinition Width="200"/>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="180"/>
                                     <ColumnDefinition Width="180"/>
@@ -110,10 +105,9 @@
 
                                 <TextBlock Grid.Column="0" Text="{x:Bind Identificacion}" VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1" Text="{x:Bind Nombre}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Grid.Column="2" Text="{x:Bind Apellidos}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Grid.Column="3" Text="{x:Bind Tel}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="4" Text="{x:Bind Direccion}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
-                                <TextBlock Grid.Column="5" Text="{x:Bind Correo}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="2" Text="{x:Bind Tel}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="{x:Bind Direccion}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
+                                <TextBlock Grid.Column="4" Text="{x:Bind Correo}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
