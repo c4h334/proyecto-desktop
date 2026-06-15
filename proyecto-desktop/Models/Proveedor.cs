@@ -1,12 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
+using System.Text.Json.Serialization;
 
 namespace proyecto_desktop.Models
 {
     internal class Proveedor
     {
+        [JsonPropertyName("supplierResourceId")]
+        public Guid? SupplierResourceId { get; set; }
+
+        [JsonPropertyName("companyName")]
+        public string Nombre { get; set; } = "";
+
+        [JsonPropertyName("legalId")]
+        public string Identificacion { get; set; } = "";
+
+        [JsonPropertyName("location")]
+        public string Direccion { get; set; } = "";
+
+        [JsonPropertyName("phone")]
+        public string Tel { get; set; } = "";
+
+        [JsonPropertyName("email")]
+        public string Correo { get; set; } = "";
+
+        [JsonPropertyName("productList")]
+        public string ProductList { get; set; } = "";
     }
 }

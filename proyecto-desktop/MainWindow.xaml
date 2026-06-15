@@ -7,13 +7,40 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="proyecto-desktop">
-
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
+    Title="Gestión de la Cadena de Suministros - Raúl Vega">
 
     <Grid>
+        <Grid.Resources>
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#014681" />
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#014681" />
+        </Grid.Resources>
+
+        <NavigationView x:Name="TopNavView"
+                        PaneDisplayMode="Left"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        SelectionChanged="TopNavView_SelectionChanged"
+                        OpenPaneLength="250">
+
+            <NavigationView.PaneHeader>
+                <StackPanel Orientation="Vertical" Padding="0,20,0,10" HorizontalAlignment="Center">
+                    <Image Source="Assets/raul-vega-logo.jpg" Height="70" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="AdminNameText" Text="Administrador" FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Cadena de Suministros" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </NavigationView.PaneHeader>
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Productos" Tag="Productos" Icon="Shop"/>
+                <NavigationViewItem Content="Usuarios" Tag="Usuarios" Icon="Contact"/>
+                <NavigationViewItem Content="Proveedores" Tag="Proveedores" Icon="People"/>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="ContentFrame" Padding="32,24,32,24" />
+
+        </NavigationView>
+
+        <Frame x:Name="LoginFrame" />
 
     </Grid>
 </Window>
