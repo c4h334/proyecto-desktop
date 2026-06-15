@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace proyecto_desktop.Models
 {
-    internal class Proveedor
+    public class Proveedor
     {
         [JsonPropertyName("supplierResourceId")]
         public Guid? SupplierResourceId { get; set; }
