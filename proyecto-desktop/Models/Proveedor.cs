@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Text.Json.Serialization;
 
 namespace proyecto_desktop.Models
 {
-    public class Proveedor
+    internal class Proveedor
     {
         [JsonPropertyName("supplierResourceId")]
         public Guid? SupplierResourceId { get; set; }
