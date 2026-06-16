@@ -117,8 +117,7 @@ namespace proyecto_desktop.Views
             NumberBox nbPrecio = new() { Header = "Precio", Value = (double)(productoExistente?.Precio ?? 0) };
             TextBox txtCodigo = new() { Header = "Código", Text = productoExistente?.Codigo ?? "" };
             CheckBox chkDisponible = new() { Content = "Disponible", IsChecked = productoExistente?.Disponible ?? false };
-            NumberBox nbDescuento = new() { Header = "Descuento", Value = (double)(productoExistente?.Descuento ?? 0) };
-            NumberBox nbCantDescuento = new() { Header = "CantDescuento", Value = productoExistente?.CantDescuento ?? 0 };
+            NumberBox nbDescuento = new() { Header = "Descuento (%)", Value = (double)(productoExistente?.Descuento ?? 0), Minimum = 0, Maximum = 100, SmallChange = 1 };
             TextBox txtMaterial = new() { Header = "Material", Text = productoExistente?.Material ?? "" };
 
             Button btnBuscarImagen = new() { Content = "Seleccionar Imagen Local", Margin = new Thickness(0, 10, 0, 0) };
@@ -179,7 +178,7 @@ namespace proyecto_desktop.Views
             StackPanel panel = new() { Spacing = 20 };
             panel.Children.Add(txtNombre); panel.Children.Add(txtDescripcion); panel.Children.Add(nbCantidad);
             panel.Children.Add(nbPrecio); panel.Children.Add(txtCodigo); panel.Children.Add(chkDisponible);
-            panel.Children.Add(nbDescuento); panel.Children.Add(nbCantDescuento); panel.Children.Add(txtMaterial);
+            panel.Children.Add(nbDescuento); panel.Children.Add(txtMaterial);
             panel.Children.Add(btnBuscarImagen); panel.Children.Add(txtRutaImagen); panel.Children.Add(imgPreview);
 
             ContentDialog dialog = new()
@@ -206,7 +205,7 @@ namespace proyecto_desktop.Views
                     productoExistente!.Nombre = txtNombre.Text; productoExistente.Descripcion = txtDescripcion.Text;
                     productoExistente.Cantidad = (int)nbCantidad.Value; productoExistente.Precio = (decimal)nbPrecio.Value;
                     productoExistente.Codigo = txtCodigo.Text; productoExistente.Disponible = chkDisponible.IsChecked ?? false;
-                    productoExistente.Descuento = (decimal)nbDescuento.Value; productoExistente.CantDescuento = (int)nbCantDescuento.Value;
+                    productoExistente.Descuento = (decimal)nbDescuento.Value;
                     productoExistente.Material = txtMaterial.Text; productoExistente.Image = urlImagenFinal;
 
                     if (productoExistente.ProductResourceId.HasValue)
@@ -224,7 +223,6 @@ namespace proyecto_desktop.Views
                         Codigo = txtCodigo.Text,
                         Disponible = chkDisponible.IsChecked ?? false,
                         Descuento = (decimal)nbDescuento.Value,
-                        CantDescuento = (int)nbCantDescuento.Value,
                         Material = txtMaterial.Text,
                         Image = urlImagenFinal
                     };
