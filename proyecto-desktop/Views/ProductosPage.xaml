@@ -61,49 +61,54 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- Encabezado de tabla -->
             <Grid Grid.Row="0" Background="#556BAB" CornerRadius="8,8,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="160"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="0.8*"/>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="0.7*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.7*"/>
+                    <ColumnDefinition Width="0.7*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="18,14">
-                    <TextBlock Text="Imagen" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,14">
+                    <TextBlock Text="Img" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Código" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Código" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
-                <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
-                <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Descripción" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Descripción" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
-                <Border Grid.Column="4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Cantidad" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Cant." FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="5" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
+                <Border Grid.Column="5" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
                     <TextBlock Text="Precio" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="6" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Disponible" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="6" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Precio Final" FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="7" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Descuento" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="7" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Desc." FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="8" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Monto descuento" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="8" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Min." FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
-                <Border Grid.Column="9" Padding="16,12">
-                    <TextBlock Text="Material" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                <Border Grid.Column="9" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="12,12">
+                    <TextBlock Text="Material" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
+                </Border>
+                <Border Grid.Column="10" Padding="12,12">
+                    <TextBlock Text="Disp." FontWeight="SemiBold" Foreground="#FFFFFF"/>
                 </Border>
             </Grid>
 
@@ -112,33 +117,41 @@
                       SelectionMode="Single"
                       ShowsScrollingPlaceholders="True"
                       Margin="0,0,0,8">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:Producto">
-                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="16,14">
+                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="0,10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition Width="160"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="1.2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="0.7*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="0.7*"/>
+                                    <ColumnDefinition Width="0.7*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Image Grid.Column="0" Source="{x:Bind Image}" Width="40" Height="40" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind Codigo}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" Text="{x:Bind Nombre}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Grid.Column="3" Text="{x:Bind Descripcion}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
-                                <TextBlock Grid.Column="4" Text="{x:Bind Cantidad}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="5" Text="{x:Bind Precio}" VerticalAlignment="Center"/>
-                                <CheckBox Grid.Column="6" IsChecked="{x:Bind Disponible, Mode=OneWay}" IsEnabled="False" VerticalAlignment="Center" MinWidth="0" MinHeight="0" Margin="0,-6,0,0"/>
-                                <TextBlock Grid.Column="7" Text="{x:Bind Descuento}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="8" Text="{x:Bind CantDescuento}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="9" Text="{x:Bind Material}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                <Image Grid.Column="0" Source="{x:Bind Image}" Width="36" Height="36" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{x:Bind Codigo}" VerticalAlignment="Center" Padding="12,0" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="2" Text="{x:Bind Nombre}" VerticalAlignment="Center" Padding="12,0" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="3" Text="{x:Bind Descripcion}" VerticalAlignment="Center" Padding="12,0" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="4" Text="{x:Bind Cantidad}" VerticalAlignment="Center" Padding="12,0"/>
+                                <TextBlock Grid.Column="5" Text="{x:Bind Precio}" VerticalAlignment="Center" Padding="12,0"/>
+                                <TextBlock Grid.Column="6" Text="{x:Bind PrecioFinal}" VerticalAlignment="Center" Padding="12,0"/>
+                                <TextBlock Grid.Column="7" Text="{x:Bind Descuento}" VerticalAlignment="Center" Padding="12,0"/>
+                                <TextBlock Grid.Column="8" Text="{x:Bind CantDescuento}" VerticalAlignment="Center" Padding="12,0"/>
+                                <TextBlock Grid.Column="9" Text="{x:Bind Material}" VerticalAlignment="Center" Padding="12,0" TextTrimming="CharacterEllipsis"/>
+                                <CheckBox Grid.Column="10" IsChecked="{x:Bind Disponible, Mode=OneWay}" IsEnabled="False" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="12,0,0,0" MinWidth="0" MinHeight="0"/>
                             </Grid>
                         </Border>
                     </DataTemplate>

@@ -63,27 +63,27 @@
 
             <Grid Grid.Row="0" Padding="0" Background="#556BAB" CornerRadius="8,8,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="180"/>
-                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Identificación" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                    <TextBlock Text="Identificación" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
                 <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                    <TextBlock Text="Nombre" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
                 <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Teléfono" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                    <TextBlock Text="Teléfono" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
                 <Border Grid.Column="3" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0" Padding="16,12">
-                    <TextBlock Text="Dirección" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                    <TextBlock Text="Dirección" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
                 <Border Grid.Column="4" Padding="16,12">
-                    <TextBlock Text="Correo" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                    <TextBlock Text="Correo" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                 </Border>
             </Grid>
 
@@ -91,23 +91,29 @@
                       x:Name="ProveedoresListView"
                       SelectionMode="Single"
                       Margin="0,0,0,8">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:Proveedor">
-                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="16,14">
+                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="0,10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="130"/>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1.5*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Column="0" Text="{x:Bind Identificacion}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind Nombre}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Grid.Column="2" Text="{x:Bind Tel}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="3" Text="{x:Bind Direccion}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,10,0"/>
-                                <TextBlock Grid.Column="4" Text="{x:Bind Correo}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="0" Text="{x:Bind Identificacion}" VerticalAlignment="Center" Padding="16,0" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="1" Text="{x:Bind Nombre}" VerticalAlignment="Center" Padding="16,0" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="2" Text="{x:Bind Tel}" VerticalAlignment="Center" Padding="16,0" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="3" Text="{x:Bind Direccion}" VerticalAlignment="Center" Padding="16,0" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="4" Text="{x:Bind Correo}" VerticalAlignment="Center" Padding="16,0" TextTrimming="CharacterEllipsis"/>
                             </Grid>
                         </Border>
                     </DataTemplate>

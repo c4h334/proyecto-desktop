@@ -35,6 +35,9 @@ namespace proyecto_desktop.Models
         [JsonPropertyName("discountQuantity")]
         public int CantDescuento { get; set; }
 
+        [JsonPropertyName("finalPrice")]
+        public decimal PrecioFinal { get; set; }
+
         [JsonPropertyName("material")]
         public string Material { get; set; } = "";
     }
