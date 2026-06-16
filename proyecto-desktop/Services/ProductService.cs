@@ -11,6 +11,7 @@ namespace proyecto_desktop.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl = "https://raulvega-f7f8dfcvhbb4cmaz.mexicocentral-01.azurewebsites.net/api/products";
+        private readonly string _adminUrl = "https://raulvega-f7f8dfcvhbb4cmaz.mexicocentral-01.azurewebsites.net/api/products/all";
 
         public ProductService()
         {
@@ -24,7 +25,7 @@ namespace proyecto_desktop.Services
 
         public async Task<List<Producto>> GetProductosAsync()
         {
-            var response = await _httpClient.GetAsync(_baseUrl);
+            var response = await _httpClient.GetAsync(_adminUrl);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<Producto>>() ?? new List<Producto>();
         }
