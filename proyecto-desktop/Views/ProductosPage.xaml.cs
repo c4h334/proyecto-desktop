@@ -111,14 +111,14 @@ namespace proyecto_desktop.Views
         private async Task MostrarDialogoProducto(Producto? productoExistente)
         {
             bool esEdicion = productoExistente != null;
+            TextBox txtCodigo = new() { Header = "Código", Text = productoExistente?.Codigo ?? "" };
             TextBox txtNombre = new() { Header = "Nombre", Text = productoExistente?.Nombre ?? "" };
             TextBox txtDescripcion = new() { Header = "Descripción", Text = productoExistente?.Descripcion ?? "" };
             NumberBox nbCantidad = new() { Header = "Cantidad", Value = productoExistente?.Cantidad ?? 0 };
             NumberBox nbPrecio = new() { Header = "Precio", Value = (double)(productoExistente?.Precio ?? 0) };
-            TextBox txtCodigo = new() { Header = "Código", Text = productoExistente?.Codigo ?? "" };
-            CheckBox chkDisponible = new() { Content = "Disponible", IsChecked = productoExistente?.Disponible ?? false };
             NumberBox nbDescuento = new() { Header = "Descuento (%)", Value = (double)(productoExistente?.Descuento ?? 0), Minimum = 0, Maximum = 100, SmallChange = 1 };
             TextBox txtMaterial = new() { Header = "Material", Text = productoExistente?.Material ?? "" };
+            CheckBox chkDisponible = new() { Content = "Disponible", IsChecked = productoExistente?.Disponible ?? false };
 
             Button btnBuscarImagen = new() { Content = "Seleccionar Imagen Local", Margin = new Thickness(0, 10, 0, 0) };
             TextBlock txtRutaImagen = new()
@@ -176,9 +176,9 @@ namespace proyecto_desktop.Views
             };
 
             StackPanel panel = new() { Spacing = 20 };
-            panel.Children.Add(txtNombre); panel.Children.Add(txtDescripcion); panel.Children.Add(nbCantidad);
-            panel.Children.Add(nbPrecio); panel.Children.Add(txtCodigo); panel.Children.Add(chkDisponible);
-            panel.Children.Add(nbDescuento); panel.Children.Add(txtMaterial);
+            panel.Children.Add(txtCodigo); panel.Children.Add(txtNombre); panel.Children.Add(txtDescripcion);
+            panel.Children.Add(nbCantidad); panel.Children.Add(nbPrecio); panel.Children.Add(nbDescuento);
+            panel.Children.Add(txtMaterial); panel.Children.Add(chkDisponible);
             panel.Children.Add(btnBuscarImagen); panel.Children.Add(txtRutaImagen); panel.Children.Add(imgPreview);
 
             ContentDialog dialog = new()
